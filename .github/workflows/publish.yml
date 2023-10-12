@@ -1,0 +1,51 @@
+name: Publish release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish-release:
+    name: Publish nanoid-kotlin Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup timezone
+        run: |
+          sudo timedatectl set-timezone Europe/Zurich
+          timedatectl
+
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          java-package: jdk
+          architecture: x64
+          cache: 'gradle'
+          check-latest: false
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Decode GPG Key
+        run: |
+          mkdir -p ~/.gradle/
+          echo "${{secrets.SIGNING_SECRET_KEY_RING_FILE}}" > ~/.gradle/secring.gpg.b64
+          base64 -d ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
+
+      - name: Publish to ossh
+        run: ./gradlew publish -Psigning.keyId=${{secrets.SIGNING_KEY_ID}} -Psigning.password='${{secrets.SIGNING_PASSWORD}}' -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg) --warn --stacktrace
+        env:
+          OSSRH_USERNAME: ${{secrets.OSSRH_USERNAME}}
+          OSSRH_PASSWORD: ${{secrets.OSSRH_PASSWORD}}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-libs
+          path: build/libs
+          retention-days: 90

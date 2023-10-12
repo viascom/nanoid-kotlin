@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '*'
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup timezone
+        run: |
+          sudo timedatectl set-timezone Europe/Zurich
+          timedatectl
+
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '19'
+          java-package: jdk
+          architecture: x64
+          cache: 'gradle'
+          check-latest: false
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+        
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build with Gradle
+        run: ./gradlew build --warn --full-stacktrace
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-libs
+          path: build/libs
+          retention-days: 3

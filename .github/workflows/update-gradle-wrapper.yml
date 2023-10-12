@@ -1,0 +1,28 @@
+name: Update Gradle Wrapper
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  update-gradle-wrapper:
+    name: Daily check to upgrade Gradle Wrapper
+    runs-on: self-hosted
+
+    steps:
+      - name: Setup timezone
+        run: |
+          sudo timedatectl set-timezone Europe/Zurich
+          timedatectl
+
+      - uses: actions/checkout@v4
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Update Gradle Wrapper
+        uses: gradle-update/update-gradle-wrapper-action@v1
+        with:
+          labels: dependencies, gradle
+          reviewers: nik-sta

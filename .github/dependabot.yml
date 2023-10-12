@@ -1,0 +1,26 @@
+version: 2
+updates:
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "15:00"
+      timezone: "Europe/Zurich"
+    target-branch: "main"
+    labels:
+      - "github-actions"
+      - "dependencies"
+
+  # Enable version updates for Gradle
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "15:00"
+      timezone: "Europe/Zurich"
+    target-branch: "main"
+    labels:
+      - "gradle"
+      - "dependencies"
