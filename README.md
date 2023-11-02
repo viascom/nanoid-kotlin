@@ -1,5 +1,9 @@
 # Nano ID for Kotlin
 
+<a href="https://github.com/viascom/nanoid-kotlin/releases"><img src="https://img.shields.io/maven-central/v/io.viascom.nanoid/nanoid" alt="Maven central"></a>
+<img src="https://img.shields.io/badge/Kotlin-1.9.20-%238052ff?logo=kotlin" alt="Kotlin Version">
+<a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="license Apache 2.0"></a>
+
 _Inspired by the following parent project: [ai/nanoid](https://github.com/ai/nanoid)_
 
 <img src="./logo.svg" align="right" alt="Nano ID logo by Anton Lovchikov" width="180" height="94">
@@ -15,6 +19,26 @@ A tiny, secure, URL-friendly, unique string ID generator for Kotlin.
   to [over 20 programming languages](https://github.com/ai/nanoid/blob/main/README.md#other-programming-languages).
 
 ## How to use
+
+Add nanoid-kotlin as a dependency to your project.
+
+Gradle:
+```gradle
+dependencies {
+  implementation 'io.viascom.nanoid:nanoid:1.0.0'
+}
+```
+
+Maven:
+```xml
+<dependency>
+    <groupId>io.viascom.nanoid</groupId>
+    <artifactId>nanoid</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+Start using it:
 
 ```kotlin
 val id = NanoId.generate()
