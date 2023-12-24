@@ -44,7 +44,7 @@ jobs:
           OSSRH_PASSWORD: ${{secrets.OSSRH_PASSWORD}}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-libs
           path: build/libs
