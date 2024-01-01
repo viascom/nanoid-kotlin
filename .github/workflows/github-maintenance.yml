@@ -1,25 +1,17 @@
-name: Delete old workflow runs
+name: GitHub Maintenance
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 3 * * *' # Run daily at 03:00
 
 jobs:
-  delete_runs:
+  github_maintenance:
+    name: Execute Maintenance
     runs-on: ubuntu-latest
+
     permissions:
       actions: write
 
     steps:
-      - name: Setup timezone
-        run: |
-          sudo timedatectl set-timezone Europe/Zurich
-          timedatectl
-
       - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: 30
-          keep_minimum_runs: 7
+        uses: viascom/github-maintenance-action@v0.0.1
