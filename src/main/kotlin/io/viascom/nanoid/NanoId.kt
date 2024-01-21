@@ -51,6 +51,7 @@ object NanoId {
      * @throws IllegalArgumentException if the alphabet is empty or larger than 255 characters, or if the size is not greater than zero.
      */
     @JvmOverloads
+    @JvmStatic
     fun generate(
         @NotNull
         size: Int = 21,
@@ -84,6 +85,7 @@ object NanoId {
      * @return The generated optimized string.
      */
     @JvmOverloads
+    @JvmStatic
     fun generateOptimized(@NotNull size: Int, @NotNull alphabet: String, @NotNull mask: Int, @NotNull step: Int, @NotNull random: Random = SecureRandom()): String {
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
@@ -107,6 +109,7 @@ object NanoId {
      * @param alphabet The set of characters to use for generating the string.
      * @return The additional bytes factor, rounded to two decimal places.
      */
+    @JvmStatic
     fun calculateAdditionalBytesFactor(@NotNull alphabet: String): Double {
         val mask = calculateMask(alphabet)
         return (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
@@ -118,6 +121,7 @@ object NanoId {
      * @param alphabet The set of characters to use for generating the string.
      * @return The calculated mask value.
      */
+    @JvmStatic
     fun calculateMask(@NotNull alphabet: String) = (2 shl (Integer.SIZE - 1 - Integer.numberOfLeadingZeros(alphabet.length - 1))) - 1
 
     /**
@@ -128,6 +132,7 @@ object NanoId {
      * @param additionalBytesFactor The additional bytes factor. Default value is calculated using `calculateAdditionalBytesFactor()`.
      * @return The number of random bytes to generate in each iteration.
      */
+    @JvmStatic
     @JvmOverloads
     fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)) =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()

@@ -11,7 +11,7 @@ plugins {
 ext {
     major = 1
     minor = 0
-    patch = 0
+    patch = 1
 
     isCiServer = System.getenv("GITHUB_ACTIONS") != null || System.getProperty("GITHUB_ACTIONS") != null
 }
@@ -33,6 +33,9 @@ jar {
 java {
     withSourcesJar()
     withJavadocJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 repositories {
@@ -45,7 +48,7 @@ dependencies {
 }
 
 tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_19
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_17
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=all"]
 }
 

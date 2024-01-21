@@ -1,7 +1,8 @@
 # Nano ID for Kotlin
 
 <a href="https://github.com/viascom/nanoid-kotlin/releases"><img src="https://img.shields.io/maven-central/v/io.viascom.nanoid/nanoid" alt="Maven central"></a>
-<img src="https://img.shields.io/badge/Kotlin-1.9.20-%238052ff?logo=kotlin" alt="Kotlin Version">
+<img src="https://img.shields.io/badge/Kotlin-1.9.22-%238052ff?logo=kotlin" alt="Kotlin Version">
+<img src="https://img.shields.io/badge/Java-17-%23437291?logo=openjdk" alt="Java Version">
 <a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="license Apache 2.0"></a>
 
 _Inspired by the following parent project: [ai/nanoid](https://github.com/ai/nanoid)_
@@ -25,7 +26,7 @@ Add nanoid-kotlin as a dependency to your project.
 Gradle:
 ```gradle
 dependencies {
-  implementation 'io.viascom.nanoid:nanoid:1.0.0'
+  implementation 'io.viascom.nanoid:nanoid:1.0.1'
 }
 ```
 
@@ -34,7 +35,7 @@ Maven:
 <dependency>
     <groupId>io.viascom.nanoid</groupId>
     <artifactId>nanoid</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
