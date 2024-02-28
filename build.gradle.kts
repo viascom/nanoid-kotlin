@@ -37,6 +37,8 @@ kotlin {
 //    @OptIn(ExperimentalWasmDsl::class)
 //    wasmJs()
     androidTarget()
+    linuxX64()
+    mingwX64()
     sourceSets {
         val commonMain by getting {
             dependencies {
