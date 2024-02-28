@@ -20,19 +20,20 @@ project.logger.lifecycle("Version of this build: $version")
 android {
     namespace = "io.viascom.nanoid"
     compileSdk = 34
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 kotlin {
     jvm()
     js {
         browser()
-        nodejs()
     }
 //    @OptIn(ExperimentalWasmDsl::class)
 //    wasmJs()
     androidTarget()
-    linuxX64()
-    mingwX64()
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -44,10 +45,6 @@ kotlin {
         val jvmMain by getting
         val jvmTest by getting
     }
-}
-
-dependencies {
-
 }
 
 tasks.withType<KotlinCompile>().configureEach {
