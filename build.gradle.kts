@@ -17,12 +17,6 @@ group = "io.viascom.nanoid"
 version = "$major.$minor.$patch${if (isCiServer) "" else "-SNAPSHOT"}"
 project.logger.lifecycle("Version of this build: $version")
 
-repositories {
-    gradlePluginPortal()
-    mavenCentral()
-    google()
-}
-
 android {
     namespace = "io.viascom.nanoid"
     compileSdk = 34
