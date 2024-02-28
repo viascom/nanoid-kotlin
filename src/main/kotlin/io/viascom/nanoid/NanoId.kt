@@ -22,8 +22,7 @@
 package io.viascom.nanoid
 
 import org.jetbrains.annotations.NotNull
-import java.security.SecureRandom
-import java.util.*
+import org.kotlincrypto.SecureRandom
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -60,7 +59,7 @@ object NanoId {
         @NotNull
         additionalBytesFactor: Double = 1.6,
         @NotNull
-        random: Random = SecureRandom()
+        random: SecureRandom = SecureRandom()
     ): String {
         require(!(alphabet.isEmpty() || alphabet.length >= 256)) { "alphabet must contain between 1 and 255 symbols." }
         require(size > 0) { "size must be greater than zero." }
@@ -86,7 +85,13 @@ object NanoId {
      */
     @JvmOverloads
     @JvmStatic
-    fun generateOptimized(@NotNull size: Int, @NotNull alphabet: String, @NotNull mask: Int, @NotNull step: Int, @NotNull random: Random = SecureRandom()): String {
+    fun generateOptimized(
+        @NotNull size: Int,
+        @NotNull alphabet: String,
+        @NotNull mask: Int,
+        @NotNull step: Int,
+        @NotNull random: SecureRandom = SecureRandom()
+    ): String {
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
         while (true) {
@@ -134,8 +139,11 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)) =
-        ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
+    fun calculateStep(
+        @NotNull size: Int,
+        @NotNull alphabet: String,
+        @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)
+    ) = ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
 
     @JvmSynthetic
     internal fun Double.round(decimals: Int): Double {
