@@ -21,9 +21,10 @@
 
 package io.viascom.nanoid
 
-import org.kotlincrypto.SecureRandom
+import dev.whyoleg.cryptography.random.CryptographyRandom
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.random.Random
 
 /**
  * NanoId is a utility object providing functions for generating secure, URL-friendly, unique identifiers.
@@ -37,7 +38,6 @@ import kotlin.math.ceil
  * ```
  */
 object NanoId {
-
     /**
      * Generates a random string based on specified or default parameters.
      *
@@ -54,7 +54,7 @@ object NanoId {
         size: Int = 21,
         alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
         additionalBytesFactor: Double = 1.6,
-        random: SecureRandom = SecureRandom()
+        random: Random = CryptographyRandom.Default
     ): String {
         require(!(alphabet.isEmpty() || alphabet.length >= 256)) { "alphabet must contain between 1 and 255 symbols." }
         require(size > 0) { "size must be greater than zero." }
@@ -85,7 +85,7 @@ object NanoId {
         alphabet: String,
         mask: Int,
         step: Int,
-        random: SecureRandom = SecureRandom()
+        random: Random = CryptographyRandom.Default
     ): String {
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)

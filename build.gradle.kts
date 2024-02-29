@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -28,22 +29,19 @@ android {
 
 kotlin {
     jvm()
-    js {
-        browser()
-    }
-//    @OptIn(ExperimentalWasmDsl::class)
-//    wasmJs()
+    js()
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs()
     androidTarget()
+    linuxX64()
+    mingwX64()
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib"))
-                implementation("org.kotlincrypto:secure-random:0.2.0")
+                implementation("dev.whyoleg.cryptography:cryptography-core:0.3.0")
             }
         }
-        val commonTest by getting
-        val jvmMain by getting
-        val jvmTest by getting
     }
 }
 
@@ -67,7 +65,7 @@ publishing {
     }
 
     publications {
-        create<MavenPublication>("mavenJava") {
+        withType<MavenPublication> {
             pom {
                 groupId = "io.viascom.nanoid"
                 name = "nanoid"
@@ -101,6 +99,12 @@ publishing {
                         email.set("nikola.stankovic@viascom.email")
                         organizationUrl.set("https://viascom.io/")
                     }
+                    developer {
+                        id.set("illyan")
+                        name.set("Balázs Püspök-Kiss")
+                        email.set("pkblazsak@gmail.com")
+                        organizationUrl.set("https://github.com/HLCaptain")
+                    }
                 }
             }
         }
@@ -108,7 +112,7 @@ publishing {
 }
 
 signing {
-    sign(publishing.publications["mavenJava"])
+    sign(publishing.publications)
 }
 
 tasks.withType<Sign>().configureEach {
