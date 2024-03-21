@@ -39,7 +39,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib"))
-                implementation("dev.whyoleg.cryptography:cryptography-core:0.3.0")
+                implementation("com.soywiz.korge:korlibs-crypto:5.4.0")
             }
         }
     }

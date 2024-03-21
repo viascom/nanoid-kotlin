@@ -21,7 +21,7 @@
 
 package io.viascom.nanoid
 
-import dev.whyoleg.cryptography.random.CryptographyRandom
+import korlibs.crypto.SecureRandom
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.random.Random
@@ -54,7 +54,7 @@ object NanoId {
         size: Int = 21,
         alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
         additionalBytesFactor: Double = 1.6,
-        random: Random = CryptographyRandom.Default
+        random: Random = SecureRandom
     ): String {
         require(!(alphabet.isEmpty() || alphabet.length >= 256)) { "alphabet must contain between 1 and 255 symbols." }
         require(size > 0) { "size must be greater than zero." }
@@ -85,7 +85,7 @@ object NanoId {
         alphabet: String,
         mask: Int,
         step: Int,
-        random: Random = CryptographyRandom.Default
+        random: Random = SecureRandom
     ): String {
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
