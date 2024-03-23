@@ -8,13 +8,12 @@ plugins {
     kotlin("multiplatform") version "1.9.23"
 }
 
-val major by extra { 1 }
-val minor by extra { 0 }
-val patch by extra { 1 }
 val isCiServer by extra { System.getenv("GITHUB_ACTIONS") != null || System.getProperty("GITHUB_ACTIONS") != null }
+val pluginVersion = "1.1.0"
+val pluginVersionSuffix = if (isCiServer) "" else "-SNAPSHOT"
 
 group = "io.viascom.nanoid"
-version = "$major.$minor.$patch${if (isCiServer) "" else "-SNAPSHOT"}"
+version = pluginVersion + pluginVersionSuffix
 project.logger.lifecycle("Version of this build: $version")
 
 android {
@@ -28,7 +27,7 @@ android {
 
 kotlin {
     jvm()
-    js { browser() }
+    js { browser(); nodejs() }
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs()
     androidTarget {
