@@ -2,11 +2,10 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    idea
     id("maven-publish")
     signing
     id("com.android.library") version "8.2.2"
-    kotlin("multiplatform") version "1.9.22"
+    kotlin("multiplatform") version "1.9.23"
 }
 
 val major by extra { 1 }
@@ -29,12 +28,24 @@ android {
 
 kotlin {
     jvm()
-    js()
+    js { browser() }
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs()
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
     linuxX64()
     mingwX64()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "Shared"
+            isStatic = true
+        }
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
