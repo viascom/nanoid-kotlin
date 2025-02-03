@@ -24,14 +24,17 @@ A tiny, secure, URL-friendly, unique string ID generator for Kotlin.
 Add nanoid-kotlin as a dependency to your project.
 
 Gradle:
+
 ```gradle
 dependencies {
-  implementation 'io.viascom.nanoid:nanoid:1.0.1'
+  implementation 'io.viascom.nanoid:nanoid:1.1.0'
 }
 ```
 
 Maven:
+
 ```xml
+
 <dependency>
     <groupId>io.viascom.nanoid</groupId>
     <artifactId>nanoid</artifactId>
@@ -52,26 +55,26 @@ val idWithCustomAlphabet = NanoId.generate(alphabet = "ABC123")
 
 ## Calculating the additional bytes factor for a custom alphabet
 
-If you change the alphabet of the `NanoId.generate()` function, you could optimize the performance by calculating a new additional
-bytes factor with the following function:
+If you change the alphabet of the `NanoId.generate()` function, you could optimize the performance by calculating a new
+additional bytes factor with the following function:
 
 ```kotlin
 val bytesFactor = NanoId.calculateAdditionalBytesFactor("ABC123")
 val id = NanoId.generate(21, "ABC123", bytesFactor)
 ```
 
-Utilizing a custom-calculated additional bytes factor in `NanoId.generate()` enhances string generation performance. This factor
-determines how many bytes are generated in a single batch, optimizing computational efficiency. Generating an optimal number
-of bytes per batch minimizes redundant operations and conserves memory.
+Utilizing a custom-calculated additional bytes factor in `NanoId.generate()` enhances string generation performance.
+This factor determines how many bytes are generated in a single batch, optimizing computational efficiency. Generating an optimal
+number of bytes per batch minimizes redundant operations and conserves memory.
 
 ## Usage Guide: `NanoId.generateOptimized()`
 
-The `NanoId.generateOptimized()` function is an advanced version of the `NanoId.generate()` function designed for higher performance and
-lower memory overhead. While it provides a more efficient mechanism to generate unique identifiers, it assumes that you
+The `NanoId.generateOptimized()` function is an advanced version of the `NanoId.generate()` function designed for higher
+performance and lower memory overhead. While it provides a more efficient mechanism to generate unique identifiers, it assumes that you
 know precisely how you want to use it.
 
-🚫 **Warning**: No checks are performed inside `NanoId.generateOptimized()`. Use it only if you're sure about the parameters you'
-re passing.
+🚫 **Warning**: No checks are performed inside `NanoId.generateOptimized()`. Use it only if you're sure about the
+parameters you're passing.
 
 ### Example Usage
 
@@ -90,14 +93,15 @@ val id = NanoId.generateOptimized(10, "_-0123456789abcdefghijklmnopqrstuvwxyzABC
 - **Customization**: Feel free to adjust the parameters to suit your specific needs, but always be cautious about the
   values you're inputting.
 
-By following this guide, you can seamlessly integrate the `NanoId.generateOptimized()` function into your projects and enjoy the
-benefits of its optimized performance.
+By following this guide, you can seamlessly integrate the `NanoId.generateOptimized()` function into your projects and
+enjoy the benefits of its optimized performance.
 
 ## 🌱 Contributors Welcome
 
 - 🐛 **Encountered a Bug?** Let us know with an issue. Every bit of feedback helps enhance the project.
 
-- 💡 **Interested in Contributing Code?** Simply fork and submit a pull request. Every contribution, no matter its size, is valued.
+- 💡 **Interested in Contributing Code?** Simply fork and submit a pull request. Every contribution, no matter its size,
+  is valued.
 
 - 📣 **Have Some Ideas?** We're always open to suggestions. Initiate an issue for discussions or to share your insights.
 
