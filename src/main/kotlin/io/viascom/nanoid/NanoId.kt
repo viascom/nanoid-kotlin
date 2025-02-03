@@ -129,7 +129,8 @@ object NanoId {
      * @return The additional bytes factor, rounded to two decimal places.
      */
     @JvmStatic
-    fun calculateAdditionalBytesFactor(@NotNull alphabet: String, @NotNull mask: Int): Double =
+    @JvmOverloads
+    fun calculateAdditionalBytesFactor(@NotNull alphabet: String, @NotNull mask: Int = calculateMask(alphabet)): Double =
         (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
 
     /**
@@ -141,8 +142,13 @@ object NanoId {
      * @return The number of random bytes to generate in each iteration.
      */
     @JvmStatic
-    fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double, @NotNull mask: Int): Int =
-        ceil(additionalBytesFactor * mask * size / alphabet.length).toInt()
+    @JvmOverloads
+    fun calculateStep(
+        @NotNull size: Int,
+        @NotNull alphabet: String,
+        @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet),
+        @NotNull mask: Int = calculateMask(alphabet)
+    ): Int = ceil(additionalBytesFactor * mask * size / alphabet.length).toInt()
 
     @JvmSynthetic
     internal fun Double.round(decimals: Int): Double {
