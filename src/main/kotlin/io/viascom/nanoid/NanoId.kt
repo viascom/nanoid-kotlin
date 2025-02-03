@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Viascom Ltd liab. Co
+ * Copyright 2023-2025 Viascom Ltd liab. Co
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -14,7 +14,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -33,9 +33,14 @@ import kotlin.math.ceil
  * The object offers methods for generating random strings with adjustable parameters like size, alphabet,
  * overhead factor, and a custom random number generator.
  *
- * Example usage:
- * ```
+ * Example usage in Kotlin:
+ * ```kotlin
  * val id = NanoId.generate()
+ * ```
+ *
+ * Example usage in Java:
+ * ```java
+ * String id = NanoId.generate();
  * ```
  */
 object NanoId {
@@ -53,21 +58,17 @@ object NanoId {
     @JvmOverloads
     @JvmStatic
     fun generate(
-        @NotNull
-        size: Int = 21,
-        @NotNull
-        alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        @NotNull
-        additionalBytesFactor: Double = 1.6,
-        @NotNull
-        random: Random = SecureRandom()
+        @NotNull size: Int = 21,
+        @NotNull alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        @NotNull additionalBytesFactor: Double = 1.6,
+        @NotNull random: Random = SecureRandom()
     ): String {
-        require(!(alphabet.isEmpty() || alphabet.length >= 256)) { "alphabet must contain between 1 and 255 symbols." }
-        require(size > 0) { "size must be greater than zero." }
-        require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal 1." }
+        require(alphabet.isNotEmpty() && alphabet.length < 256) { "Alphabet must contain between 1 and 255 symbols." }
+        require(size > 0) { "Size must be greater than zero." }
+        require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal to 1." }
 
         val mask = calculateMask(alphabet)
-        val step = calculateStep(size, alphabet, additionalBytesFactor)
+        val step = calculateStep(size, alphabet, additionalBytesFactor, mask)
 
         return generateOptimized(size, alphabet, mask, step, random)
     }
@@ -86,33 +87,30 @@ object NanoId {
      */
     @JvmOverloads
     @JvmStatic
-    fun generateOptimized(@NotNull size: Int, @NotNull alphabet: String, @NotNull mask: Int, @NotNull step: Int, @NotNull random: Random = SecureRandom()): String {
+    fun generateOptimized(
+        @NotNull size: Int,
+        @NotNull alphabet: String,
+        @NotNull mask: Int,
+        @NotNull step: Int,
+        @NotNull random: Random = SecureRandom()
+    ): String {
+        require(size > 0) { "Size must be greater than zero." }
+
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
-        while (true) {
+
+        while (idBuilder.length < size) {
             random.nextBytes(bytes)
-            for (i in 0 until step) {
-                val alphabetIndex = bytes[i].toInt() and mask
+            for (byte in bytes) {
+                val alphabetIndex = byte.toInt() and mask
                 if (alphabetIndex < alphabet.length) {
                     idBuilder.append(alphabet[alphabetIndex])
-                    if (idBuilder.length == size) {
-                        return idBuilder.toString()
-                    }
+                    if (idBuilder.length == size) break
                 }
             }
         }
-    }
 
-    /**
-     * Calculates the optimal additional bytes factor needed for the generation of the step size, which is used to generate random bytes in each iteration.
-     *
-     * @param alphabet The set of characters to use for generating the string.
-     * @return The additional bytes factor, rounded to two decimal places.
-     */
-    @JvmStatic
-    fun calculateAdditionalBytesFactor(@NotNull alphabet: String): Double {
-        val mask = calculateMask(alphabet)
-        return (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
+        return idBuilder.toString()
     }
 
     /**
@@ -122,7 +120,17 @@ object NanoId {
      * @return The calculated mask value.
      */
     @JvmStatic
-    fun calculateMask(@NotNull alphabet: String) = (2 shl (Integer.SIZE - 1 - Integer.numberOfLeadingZeros(alphabet.length - 1))) - 1
+    fun calculateMask(@NotNull alphabet: String): Int = (1 shl (Integer.SIZE - Integer.numberOfLeadingZeros(alphabet.length - 1))) - 1
+
+    /**
+     * Calculates the optimal additional bytes factor needed for the generation of the step size, which is used to generate random bytes in each iteration.
+     *
+     * @param alphabet The set of characters to use for generating the string.
+     * @return The additional bytes factor, rounded to two decimal places.
+     */
+    @JvmStatic
+    fun calculateAdditionalBytesFactor(@NotNull alphabet: String, @NotNull mask: Int): Double =
+        (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
 
     /**
      * Calculates the number of random bytes to generate in each iteration for a given size and alphabet.
@@ -133,9 +141,8 @@ object NanoId {
      * @return The number of random bytes to generate in each iteration.
      */
     @JvmStatic
-    @JvmOverloads
-    fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)) =
-        ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
+    fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double, @NotNull mask: Int): Int =
+        ceil(additionalBytesFactor * mask * size / alphabet.length).toInt()
 
     @JvmSynthetic
     internal fun Double.round(decimals: Int): Double {

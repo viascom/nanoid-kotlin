@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -5,7 +6,7 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
-    id "org.jetbrains.kotlin.jvm" version "1.9.23"
+    id "org.jetbrains.kotlin.jvm" version "2.1.10"
 }
 
 ext {
@@ -16,25 +17,15 @@ ext {
     isCiServer = System.getenv("GITHUB_ACTIONS") != null || System.getProperty("GITHUB_ACTIONS") != null
 }
 
-group "io.viascom.nanoid"
+group = "io.viascom.nanoid"
 version = "${major}.${minor}.${patch}${isCiServer ? "" : "-SNAPSHOT"}"
 project.logger.lifecycle("Version of this build: ${version}")
-
-jar {
-    archiveClassifier.set("")
-
-    manifest {
-        attributes "Implementation-Version": "${project.version}"
-    }
-
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
 
 java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
 
@@ -43,13 +34,29 @@ repositories {
 }
 
 dependencies {
-    //====== Kotlin ======
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    //====== Kotlin Dependencies ======
+    api("org.jetbrains.kotlin:kotlin-stdlib")
+
+    //====== Testing Dependencies ======
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("org.assertj:assertj-core:3.27.3")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.10")
 }
 
 tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_17
-    kotlinOptions.freeCompilerArgs = ["-Xjvm-default=all"]
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.add("-Xjvm-default=all")
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                "Implementation-Version": "${project.version}"
+        )
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 publishing {
@@ -62,8 +69,8 @@ publishing {
             url = isCiServer ? releaseRepo : snapshotRepo
 
             credentials {
-                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
-                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME") ?: ""
+                password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD") ?: ""
             }
         }
     }
@@ -75,14 +82,14 @@ publishing {
             pom {
                 groupId = "io.viascom.nanoid"
                 name = "nanoid"
-                description = "."
+                description = "Nano ID for Kotlin."
                 url = "https://github.com/viascom/nanoid-kotlin"
                 packaging = "jar"
 
                 licenses {
                     license {
-                        name = 'Apache-2.0 license'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                        name = "Apache-2.0 license"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0"
                     }
                 }
 
@@ -117,4 +124,14 @@ signing {
 
 tasks.withType(Sign).configureEach {
     onlyIf { isCiServer }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    test {
+        java.srcDirs("src/test/java", "src/test/kotlin")
+    }
 }
