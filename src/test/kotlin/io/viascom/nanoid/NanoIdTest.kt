@@ -137,11 +137,4 @@ internal class NanoIdTest {
 
         assertThat(id).hasSize(1000)
     }
-
-    @Test
-    fun testGenerateOptimized_ThrowsOnZeroSize() {
-        val mask = calculateMask(DEFAULT_ALPHABET)
-        val step = calculateStep(0, DEFAULT_ALPHABET, 1.6, mask)
-        assertThrows(IllegalArgumentException::class.java) { generateOptimized(0, DEFAULT_ALPHABET, mask, step, SecureRandom()) }
-    }
 }

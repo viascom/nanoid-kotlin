@@ -63,9 +63,9 @@ object NanoId {
         @NotNull additionalBytesFactor: Double = 1.6,
         @NotNull random: Random = SecureRandom()
     ): String {
-        require(alphabet.isNotEmpty() && alphabet.length < 256) { "Alphabet must contain between 1 and 255 symbols." }
-        require(size > 0) { "Size must be greater than zero." }
-        require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal to 1." }
+        require(alphabet.isNotEmpty() && alphabet.length < 256) { "'alphabet' must contain between 1 and 255 symbols." }
+        require(size > 0) { "'size' must be greater than zero." }
+        require(additionalBytesFactor >= 1) { "'additionalBytesFactor' must be greater or equal to 1." }
 
         val mask = calculateMask(alphabet)
         val step = calculateStep(size, alphabet, additionalBytesFactor, mask)
@@ -94,8 +94,6 @@ object NanoId {
         @NotNull step: Int,
         @NotNull random: Random = SecureRandom()
     ): String {
-        require(size > 0) { "Size must be greater than zero." }
-
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
         while (true) {
@@ -138,6 +136,7 @@ object NanoId {
      * @param size The length of the generated string.
      * @param alphabet The set of characters to use for generating the string.
      * @param additionalBytesFactor The additional bytes factor. Default value is calculated using `calculateAdditionalBytesFactor()`.
+     * @param mask The mask used for mapping random bytes to alphabet indices. Default value is calculated using `calculateMask()`.
      * @return The number of random bytes to generate in each iteration.
      */
     @JvmStatic

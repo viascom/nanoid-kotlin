@@ -126,14 +126,6 @@ class NanoIdJavaTest {
     }
 
     @Test
-    void testGenerateOptimized_ThrowsOnZeroSize() {
-        int mask = NanoId.calculateMask("_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        int step = NanoId.calculateStep(0, "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 1.6, mask);
-
-        assertThrows(IllegalArgumentException.class, () -> NanoId.generateOptimized(0, "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", mask, step, new SecureRandom()));
-    }
-
-    @Test
     void testJvmStatic_Usage() {
         // Ensures @JvmStatic allows direct Java calls
         String id = NanoId.generate();
