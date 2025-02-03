@@ -98,19 +98,18 @@ object NanoId {
 
         val idBuilder = StringBuilder(size)
         val bytes = ByteArray(step)
-
-        while (idBuilder.length < size) {
+        while (true) {
             random.nextBytes(bytes)
-            for (byte in bytes) {
-                val alphabetIndex = byte.toInt() and mask
+            for (i in 0 until step) {
+                val alphabetIndex = bytes[i].toInt() and mask
                 if (alphabetIndex < alphabet.length) {
                     idBuilder.append(alphabet[alphabetIndex])
-                    if (idBuilder.length == size) break
+                    if (idBuilder.length == size) {
+                        return idBuilder.toString()
+                    }
                 }
             }
         }
-
-        return idBuilder.toString()
     }
 
     /**
