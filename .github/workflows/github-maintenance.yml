@@ -14,4 +14,4 @@ jobs:
 
     steps:
       - name: Delete workflow runs
-        uses: viascom/github-maintenance-action@v0.0.2
+        uses: viascom/github-maintenance-action@v0.0.3
