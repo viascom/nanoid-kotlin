@@ -48,7 +48,7 @@ object NanoId {
      * @param additionalBytesFactor The additional bytes factor used for calculating the step size. Default is 1.6.
      * @param random The random number generator to use. Default is `SecureRandom`.
      * @return The generated random string.
-     * @throws IllegalArgumentException if the alphabet is empty or larger than 255 characters, or if the size is not greater than zero.
+     * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters, or if the size is not greater than zero.
      */
     @JvmOverloads
     @JvmStatic
@@ -62,7 +62,7 @@ object NanoId {
         @NotNull
         random: Random = SecureRandom()
     ): String {
-        require(!(alphabet.isEmpty() || alphabet.length >= 256)) { "alphabet must contain between 1 and 255 symbols." }
+        require(!(alphabet.isEmpty() || alphabet.length > 256)) { "alphabet must contain between 1 and 256 symbols." }
         require(size > 0) { "size must be greater than zero." }
         require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal 1." }
 

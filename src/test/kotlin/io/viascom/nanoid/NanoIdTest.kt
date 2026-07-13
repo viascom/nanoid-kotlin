@@ -108,8 +108,16 @@ class NanoIdTest {
     }
 
     @Test
-    fun `generate rejects an alphabet larger than 255 characters`() {
+    fun `generate accepts a 256-character alphabet`() {
         val alphabet = (0 until 256).joinToString("") { it.toChar().toString() }
+        val id = NanoId.generate(size = 500, alphabet = alphabet)
+        assertEquals(500, id.length)
+        assertTrue(id.all { it in alphabet }, "unexpected character in generated id")
+    }
+
+    @Test
+    fun `generate rejects an alphabet larger than 256 characters`() {
+        val alphabet = (0..256).joinToString("") { it.toChar().toString() }
         assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = alphabet) }
     }
 
