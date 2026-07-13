@@ -45,11 +45,20 @@ repositories {
 dependencies {
     //====== Kotlin ======
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    //====== Test ======
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.withType(KotlinCompile).configureEach {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_17
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=all"]
+}
+
+test {
+    useJUnitPlatform()
 }
 
 publishing {

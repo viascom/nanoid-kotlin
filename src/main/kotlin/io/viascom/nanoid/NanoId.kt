@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Viascom Ltd liab. Co
+ * Copyright 2026 Viascom Ltd liab. Co
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -88,6 +88,20 @@ object NanoId {
     @JvmStatic
     fun generateOptimized(@NotNull size: Int, @NotNull alphabet: String, @NotNull mask: Int, @NotNull step: Int, @NotNull random: Random = SecureRandom()): String {
         val idBuilder = StringBuilder(size)
+
+        // Fast path: when every masked byte is guaranteed to be a valid index (mask < alphabet
+        // size, which is the case for a power-of-two alphabet under calculateMask), no byte is
+        // ever rejected. We can then map exactly `size` random bytes in a single pass, skipping
+        // both the retry loop and the per-byte bounds check.
+        if (mask < alphabet.length) {
+            val bytes = ByteArray(size)
+            random.nextBytes(bytes)
+            for (i in 0 until size) {
+                idBuilder.append(alphabet[bytes[i].toInt() and mask])
+            }
+            return idBuilder.toString()
+        }
+
         val bytes = ByteArray(step)
         while (true) {
             random.nextBytes(bytes)
@@ -122,7 +136,13 @@ object NanoId {
      * @return The calculated mask value.
      */
     @JvmStatic
-    fun calculateMask(@NotNull alphabet: String) = (2 shl (Integer.SIZE - 1 - Integer.numberOfLeadingZeros(alphabet.length - 1))) - 1
+    fun calculateMask(@NotNull alphabet: String): Int {
+        // `or 1` keeps the argument to numberOfLeadingZeros non-zero for a single-character
+        // alphabet (where alphabet.length - 1 == 0). Without it, numberOfLeadingZeros(0) == 32
+        // makes the shift amount negative and the mask overflows to -1. For alphabets of two or
+        // more symbols the highest set bit is unchanged, so this has no effect on the result.
+        return (2 shl (Integer.SIZE - 1 - Integer.numberOfLeadingZeros((alphabet.length - 1) or 1))) - 1
+    }
 
     /**
      * Calculates the number of random bytes to generate in each iteration for a given size and alphabet.
