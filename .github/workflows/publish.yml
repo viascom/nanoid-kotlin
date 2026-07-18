@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p ~/.gradle/
           echo "${{secrets.SIGNING_SECRET_KEY_RING_FILE}}" > ~/.gradle/secring.gpg.b64
-          base64 --decode ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
+          base64 -d < ~/.gradle/secring.gpg.b64 > ~/.gradle/secring.gpg
 
       - name: Publish to Maven Central Portal (release stays manual)
         run: ./gradlew publishToMavenCentral -Psigning.keyId=${{secrets.SIGNING_KEY_ID}} -Psigning.password='${{secrets.SIGNING_PASSWORD}}' -Psigning.secretKeyRingFile=$(echo ~/.gradle/secring.gpg) --warn --stacktrace
