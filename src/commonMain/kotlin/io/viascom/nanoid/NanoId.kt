@@ -21,11 +21,12 @@
 
 package io.viascom.nanoid
 
-import org.jetbrains.annotations.NotNull
-import java.security.SecureRandom
-import java.util.*
+import dev.whyoleg.cryptography.random.CryptographyRandom
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.random.Random
 
 /**
  * NanoId is a utility object providing functions for generating secure, URL-friendly, unique identifiers.
@@ -46,21 +47,17 @@ object NanoId {
      * @param size The desired length of the generated string. Default is 21.
      * @param alphabet The set of characters to choose from for generating the string. Default includes alphanumeric characters along with "_" and "-".
      * @param additionalBytesFactor The additional bytes factor used for calculating the step size. Default is 1.6.
-     * @param random The random number generator to use. Default is `SecureRandom`.
+     * @param random The random number generator to use. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated random string.
      * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters, or if the size is not greater than zero.
      */
-    @JvmOverloads
     @JvmStatic
+    @JvmOverloads
     fun generate(
-        @NotNull
         size: Int = 21,
-        @NotNull
         alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        @NotNull
         additionalBytesFactor: Double = 1.6,
-        @NotNull
-        random: Random = SecureRandom()
+        random: Random = CryptographyRandom.Default,
     ): String {
         require(!(alphabet.isEmpty() || alphabet.length > 256)) { "alphabet must contain between 1 and 256 symbols." }
         require(size > 0) { "size must be greater than zero." }
@@ -81,12 +78,12 @@ object NanoId {
      * @param alphabet The set of characters to choose from for generating the string.
      * @param mask The mask used for mapping random bytes to alphabet indices. Should be `(2^n) - 1` where `n` is a power of 2 less than or equal to the alphabet size.
      * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
-     * @param random The random number generator. Default is `SecureRandom`.
+     * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated optimized string.
      */
-    @JvmOverloads
     @JvmStatic
-    fun generateOptimized(@NotNull size: Int, @NotNull alphabet: String, @NotNull mask: Int, @NotNull step: Int, @NotNull random: Random = SecureRandom()): String {
+    @JvmOverloads
+    fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
         val idBuilder = StringBuilder(size)
 
         // Fast path: when every masked byte is guaranteed to be a valid index (mask < alphabet
@@ -124,7 +121,7 @@ object NanoId {
      * @return The additional bytes factor, rounded to two decimal places.
      */
     @JvmStatic
-    fun calculateAdditionalBytesFactor(@NotNull alphabet: String): Double {
+    fun calculateAdditionalBytesFactor(alphabet: String): Double {
         val mask = calculateMask(alphabet)
         return (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
     }
@@ -136,12 +133,12 @@ object NanoId {
      * @return The calculated mask value.
      */
     @JvmStatic
-    fun calculateMask(@NotNull alphabet: String): Int {
-        // `or 1` keeps the argument to numberOfLeadingZeros non-zero for a single-character
-        // alphabet (where alphabet.length - 1 == 0). Without it, numberOfLeadingZeros(0) == 32
+    fun calculateMask(alphabet: String): Int {
+        // `or 1` keeps the argument to countLeadingZeroBits non-zero for a single-character
+        // alphabet (where alphabet.length - 1 == 0). Without it, countLeadingZeroBits() == 32
         // makes the shift amount negative and the mask overflows to -1. For alphabets of two or
         // more symbols the highest set bit is unchanged, so this has no effect on the result.
-        return (2 shl (Integer.SIZE - 1 - Integer.numberOfLeadingZeros((alphabet.length - 1) or 1))) - 1
+        return (2 shl (Int.SIZE_BITS - 1 - ((alphabet.length - 1) or 1).countLeadingZeroBits())) - 1
     }
 
     /**
@@ -154,10 +151,9 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun calculateStep(@NotNull size: Int, @NotNull alphabet: String, @NotNull additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)) =
+    fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
 
-    @JvmSynthetic
     internal fun Double.round(decimals: Int): Double {
         var multiplier = 1.0
         repeat(decimals) { multiplier *= 10 }
