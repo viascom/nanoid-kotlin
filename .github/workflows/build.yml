@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Java JDK
         uses: actions/setup-java@v5
