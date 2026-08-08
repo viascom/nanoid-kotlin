@@ -20,12 +20,19 @@ plugins {
 //
 // NOTE: `rootPackageJson` does not treat resolutions as a task input, so after
 // editing this map run `./gradlew kotlinUpgradeYarnLock --rerun-tasks`.
+//
+// When adding or raising a floor, set it from the newest advisory affecting that
+// major line, not from the one Dependabot happens to have flagged. A follow-up
+// advisory can find an earlier fix incomplete and make its "patched" version
+// vulnerable in turn, which is exactly what happened to brace-expansion below.
 val npmSecurityFloors = mapOf(
     // host confusion; ajv <- schema-utils <- webpack. Parent asks ^3.0.1.
     // GHSA-7p8r-x3mc-p8w7 (CVE-2026-18446), GHSA-v2hh-gcrm-f6hx (CVE-2026-16221)
     "fast-uri" to "^3.1.5",
-    // minimatch@^9 asks ^2.0.2; 2.1.3 is a patch bump. GHSA-mh99-v99m-4gvg
-    "brace-expansion" to "^2.1.3",
+    // minimatch@^9 asks ^2.0.2. The floor is 2.1.4 rather than the 2.1.3 that
+    // GHSA-mh99-v99m-4gvg patches, because GHSA-rgw5-rvv9-x895 (CVE-2026-69152)
+    // then found that mitigation incomplete and 2.1.3 itself vulnerable.
+    "brace-expansion" to "^2.1.4",
     // mocha asks ^6.0.2, patched is 7.0.5. GHSA-5c6j-r48x-rmvq, GHSA-qj8w-gfj5-8c6v
     "serialize-javascript" to "^7.0.5",
     // mocha asks ^7.0.0, patched is 8.0.3. GHSA-73rr-hh4g-fpgx
