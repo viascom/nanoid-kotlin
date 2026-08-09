@@ -16,13 +16,13 @@ jobs:
           sudo timedatectl set-timezone Europe/Zurich
           timedatectl
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
       - name: Update Gradle Wrapper
-        uses: gradle-update/update-gradle-wrapper-action@v1
+        uses: gradle-update/update-gradle-wrapper-action@v2
         with:
           labels: dependencies, gradle
           reviewers: nik-sta
