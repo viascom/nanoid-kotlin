@@ -29,7 +29,7 @@ Gradle (Kotlin Multiplatform, in `commonMain`):
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.viascom.nanoid:nanoid:2.0.0")
+            implementation("io.viascom.nanoid:nanoid:2.0.1")
         }
     }
 }
@@ -38,7 +38,7 @@ kotlin {
 Gradle (JVM project):
 ```kotlin
 dependencies {
-    implementation("io.viascom.nanoid:nanoid:2.0.0")
+    implementation("io.viascom.nanoid:nanoid:2.0.1")
 }
 ```
 
@@ -47,7 +47,7 @@ Maven:
 <dependency>
     <groupId>io.viascom.nanoid</groupId>
     <artifactId>nanoid-jvm</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
