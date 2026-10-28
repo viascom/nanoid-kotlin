@@ -51,7 +51,7 @@ rootProject.plugins.withType<YarnPlugin> {
 
 val major = 2
 val minor = 1
-val patch = 1
+val patch = 0
 
 val isCiServer = System.getenv("GITHUB_ACTIONS") != null || System.getProperty("GITHUB_ACTIONS") != null
 
