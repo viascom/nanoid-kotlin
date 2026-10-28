@@ -5,17 +5,15 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+env:
+  TZ: Europe/Zurich
+
 jobs:
   update-gradle-wrapper:
     name: Daily check to upgrade Gradle Wrapper
     runs-on: self-hosted
 
     steps:
-      - name: Setup timezone
-        run: |
-          sudo timedatectl set-timezone Europe/Zurich
-          timedatectl
-
       - uses: actions/checkout@v7
 
       - name: Change wrapper permissions
