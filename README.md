@@ -1,7 +1,7 @@
 # Nano ID for Kotlin Multiplatform
 
 <a href="https://github.com/viascom/nanoid-kotlin/releases"><img src="https://img.shields.io/maven-central/v/io.viascom.nanoid/nanoid" alt="Maven central"></a>
-<img src="https://img.shields.io/badge/Kotlin-2.4.10-%238052ff?logo=kotlin" alt="Kotlin Version">
+<img src="https://img.shields.io/badge/Kotlin-2.4.21-%238052ff?logo=kotlin" alt="Kotlin Version">
 <img src="https://img.shields.io/badge/Multiplatform-JVM%20%7C%20JS%20%7C%20Wasm%20%7C%20iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux%20%7C%20Windows%20%7C%20Android%20Native-blue" alt="Kotlin Multiplatform">
 <a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="license Apache 2.0"></a>
 
