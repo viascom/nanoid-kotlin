@@ -37,11 +37,6 @@ val npmSecurityFloors = mapOf(
     "serialize-javascript" to "^7.0.5",
     // mocha asks ^7.0.0, patched is 8.0.3. GHSA-73rr-hh4g-fpgx
     "diff" to "^8.0.3",
-    // KGP pins webpack exactly (5.101.3); patched is 5.104.1. Held to the 5.104
-    // minor on purpose: a caret floats to the latest 5.x, which is a much larger
-    // drift from the version KGP is tested against than these two low-severity
-    // advisories justify. GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
-    "webpack" to "~5.104.1",
 )
 
 rootProject.plugins.withType<YarnPlugin> {
