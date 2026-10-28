@@ -102,8 +102,9 @@ The `NanoId.generateOptimized()` function is an advanced version of the `NanoId.
 lower memory overhead. While it provides a more efficient mechanism to generate unique identifiers, it assumes that you
 know precisely how you want to use it.
 
-🚫 **Warning**: `NanoId.generateOptimized()` does not validate the alphabet or the mask. Use it only if you're sure about the
-parameters you're passing. A `size` of zero or less returns an empty string.
+🚫 **Warning**: `NanoId.generateOptimized()` checks that `size` is not negative, the alphabet has 1 to 256 symbols and `mask`
+is within 0..255, but not that `mask` and `step` fit the alphabet. Use it only if you're sure about the parameters you're
+passing. A `size` of zero returns an empty string.
 
 ### Example Usage
 

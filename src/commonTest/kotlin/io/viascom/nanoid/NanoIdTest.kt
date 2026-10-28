@@ -195,10 +195,31 @@ class NanoIdTest {
     }
 
     @Test
-    fun generateOptimizedReturnsAnEmptyStringForANonPositiveSize() {
+    fun generateOptimizedReturnsAnEmptyStringForSizeZero() {
         assertEquals("", NanoId.generateOptimized(0, "abc", 3, 5))
-        assertEquals("", NanoId.generateOptimized(-1, "abc", 3, 5))
         assertEquals("", NanoId.generateOptimized(0, defaultAlphabet, 63, 16))
+    }
+
+    @Test
+    fun generateOptimizedRejectsANegativeSize() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(-1, "abc", 3, 5) }
+    }
+
+    @Test
+    fun generateOptimizedRejectsAnEmptyAlphabet() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "", 0, 5) }
+    }
+
+    @Test
+    fun generateOptimizedRejectsAnAlphabetLargerThan256Characters() {
+        val alphabet = (0 until 257).map { Char(it + 0x100) }.joinToString("")
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, alphabet, 255, 5) }
+    }
+
+    @Test
+    fun generateOptimizedRejectsAMaskOutsideTheByteRange() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", -1, 5) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 256, 5) }
     }
 
     @Test

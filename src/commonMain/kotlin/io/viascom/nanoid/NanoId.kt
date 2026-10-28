@@ -60,7 +60,7 @@ object NanoId {
         additionalBytesFactor: Double = 1.6,
         random: Random = CryptographyRandom.Default,
     ): String {
-        require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
+        requireValidAlphabet(alphabet)
         require(size > 0) { "size must be greater than zero." }
         require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal 1." }
 
@@ -80,12 +80,16 @@ object NanoId {
      * @param mask The mask used for mapping random bytes to alphabet indices. Should be `(2^n) - 1` where `n` is a power of 2 less than or equal to the alphabet size.
      * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
      * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
-     * @return The generated optimized string, or an empty string if `size` is not greater than zero.
+     * @return The generated optimized string, or an empty string if `size` is zero.
+     * @throws IllegalArgumentException if `size` is negative, the alphabet is empty or larger than 256 characters, or `mask` is outside 0..255.
      */
     @JvmStatic
     @JvmOverloads
     fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
-        if (size <= 0) return ""
+        require(size >= 0) { "size must not be negative." }
+        requireValidAlphabet(alphabet)
+        require(mask in 0..255) { "mask must be between 0 and 255." }
+        if (size == 0) return ""
 
         // Fast path: when every masked byte is guaranteed to be a valid index (mask < alphabet
         // size, which is the case for a power-of-two alphabet under calculateMask), no byte is
@@ -151,4 +155,7 @@ object NanoId {
     @JvmOverloads
     fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
+
+    private fun requireValidAlphabet(alphabet: String) =
+        require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
 }
