@@ -50,7 +50,7 @@ rootProject.plugins.withType<YarnPlugin> {
 }
 
 val major = 2
-val minor = 0
+val minor = 1
 val patch = 1
 
 val isCiServer = System.getenv("GITHUB_ACTIONS") != null || System.getProperty("GITHUB_ACTIONS") != null
@@ -87,6 +87,11 @@ kotlin {
         nodejs()
     }
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+        nodejs()
+    }
+
     macosArm64()
     iosArm64()
     iosX64()
@@ -100,6 +105,10 @@ kotlin {
     linuxX64()
     linuxArm64()
     mingwX64()
+    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX86()
+    androidNativeX64()
 
     sourceSets {
         commonMain.dependencies {

@@ -194,6 +194,19 @@ class NanoIdTest {
         assertTrue(id.all { it in defaultAlphabet })
     }
 
+    @Test
+    fun generateOptimizedReturnsAnEmptyStringForANonPositiveSize() {
+        assertEquals("", NanoId.generateOptimized(0, "abc", 3, 5))
+        assertEquals("", NanoId.generateOptimized(-1, "abc", 3, 5))
+        assertEquals("", NanoId.generateOptimized(0, defaultAlphabet, 63, 16))
+    }
+
+    @Test
+    fun generateOptimizedWithANonPositiveStepStillReturnsTheRequestedLength() {
+        assertEquals(5, NanoId.generateOptimized(5, "abc", 3, 0).length)
+        assertEquals(5, NanoId.generateOptimized(5, "abc", 3, -1).length)
+    }
+
     companion object {
         // Pinned outputs for kotlin.random.Random(42). Generated once on the JVM
         // (Task 3, Step 4) and asserted identically on every target, which is the

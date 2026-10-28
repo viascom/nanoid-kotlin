@@ -2,7 +2,7 @@
 
 <a href="https://github.com/viascom/nanoid-kotlin/releases"><img src="https://img.shields.io/maven-central/v/io.viascom.nanoid/nanoid" alt="Maven central"></a>
 <img src="https://img.shields.io/badge/Kotlin-2.4.10-%238052ff?logo=kotlin" alt="Kotlin Version">
-<img src="https://img.shields.io/badge/Multiplatform-JVM%20%7C%20JS%20%7C%20Wasm%20%7C%20iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux%20%7C%20Windows-blue" alt="Kotlin Multiplatform">
+<img src="https://img.shields.io/badge/Multiplatform-JVM%20%7C%20JS%20%7C%20Wasm%20%7C%20iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux%20%7C%20Windows%20%7C%20Android%20Native-blue" alt="Kotlin Multiplatform">
 <a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="license Apache 2.0"></a>
 
 _Inspired by the following parent project: [ai/nanoid](https://github.com/ai/nanoid)_
@@ -15,7 +15,7 @@ A tiny, secure, URL-friendly, unique string ID generator for Kotlin Multiplatfor
 
 * **Small.** Just a simple Kotlin object.
 * **Safe.** Uses each platform's cryptographically secure random generator via [cryptography-random](https://github.com/whyoleg/cryptography-kotlin).
-* **Multiplatform.** One artifact for JVM, JS (browser/Node), WasmJS, iOS, macOS, tvOS, watchOS, Linux and Windows.
+* **Multiplatform.** One artifact for JVM, JS (browser/Node), Wasm (JS and WASI), iOS, macOS, tvOS, watchOS, Linux, Windows and Android Native.
 * **Short IDs.** It uses a larger alphabet than UUID (`A-Za-z0-9_-`). So ID size was reduced from 36 to 21 symbols.
 * **Portable**. Nano ID was ported
   to [over 20 programming languages](https://github.com/ai/nanoid/blob/main/README.md#other-programming-languages).
@@ -29,7 +29,7 @@ Gradle (Kotlin Multiplatform, in `commonMain`):
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.viascom.nanoid:nanoid:2.0.1")
+            implementation("io.viascom.nanoid:nanoid:2.1.0")
         }
     }
 }
@@ -38,7 +38,7 @@ kotlin {
 Gradle (JVM project):
 ```kotlin
 dependencies {
-    implementation("io.viascom.nanoid:nanoid:2.0.1")
+    implementation("io.viascom.nanoid:nanoid:2.1.0")
 }
 ```
 
@@ -47,7 +47,7 @@ Maven:
 <dependency>
     <groupId>io.viascom.nanoid</groupId>
     <artifactId>nanoid-jvm</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
@@ -102,8 +102,8 @@ The `NanoId.generateOptimized()` function is an advanced version of the `NanoId.
 lower memory overhead. While it provides a more efficient mechanism to generate unique identifiers, it assumes that you
 know precisely how you want to use it.
 
-🚫 **Warning**: No checks are performed inside `NanoId.generateOptimized()`. Use it only if you're sure about the parameters you'
-re passing.
+🚫 **Warning**: `NanoId.generateOptimized()` does not validate the alphabet or the mask. Use it only if you're sure about the
+parameters you're passing. A `size` of zero or less returns an empty string.
 
 ### Example Usage
 

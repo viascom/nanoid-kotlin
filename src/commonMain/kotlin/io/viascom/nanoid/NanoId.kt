@@ -26,6 +26,7 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.round
 import kotlin.random.Random
 
 /**
@@ -59,7 +60,7 @@ object NanoId {
         additionalBytesFactor: Double = 1.6,
         random: Random = CryptographyRandom.Default,
     ): String {
-        require(!(alphabet.isEmpty() || alphabet.length > 256)) { "alphabet must contain between 1 and 256 symbols." }
+        require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
         require(size > 0) { "size must be greater than zero." }
         require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal 1." }
 
@@ -79,30 +80,27 @@ object NanoId {
      * @param mask The mask used for mapping random bytes to alphabet indices. Should be `(2^n) - 1` where `n` is a power of 2 less than or equal to the alphabet size.
      * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
      * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
-     * @return The generated optimized string.
+     * @return The generated optimized string, or an empty string if `size` is not greater than zero.
      */
     @JvmStatic
     @JvmOverloads
     fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
-        val idBuilder = StringBuilder(size)
+        if (size <= 0) return ""
 
         // Fast path: when every masked byte is guaranteed to be a valid index (mask < alphabet
         // size, which is the case for a power-of-two alphabet under calculateMask), no byte is
         // ever rejected. We can then map exactly `size` random bytes in a single pass, skipping
         // both the retry loop and the per-byte bounds check.
         if (mask < alphabet.length) {
-            val bytes = ByteArray(size)
-            random.nextBytes(bytes)
-            for (i in 0 until size) {
-                idBuilder.append(alphabet[bytes[i].toInt() and mask])
-            }
-            return idBuilder.toString()
+            val bytes = random.nextBytes(size)
+            return CharArray(size) { alphabet[bytes[it].toInt() and mask] }.concatToString()
         }
 
-        val bytes = ByteArray(step)
+        val idBuilder = StringBuilder(size)
+        val bytes = ByteArray(step.coerceAtLeast(1))
         while (true) {
             random.nextBytes(bytes)
-            for (i in 0 until step) {
+            for (i in bytes.indices) {
                 val alphabetIndex = bytes[i].toInt() and mask
                 if (alphabetIndex < alphabet.length) {
                     idBuilder.append(alphabet[alphabetIndex])
@@ -123,7 +121,7 @@ object NanoId {
     @JvmStatic
     fun calculateAdditionalBytesFactor(alphabet: String): Double {
         val mask = calculateMask(alphabet)
-        return (1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)).round(2)
+        return round((1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)) * 100) / 100
     }
 
     /**
@@ -153,10 +151,4 @@ object NanoId {
     @JvmOverloads
     fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
-
-    internal fun Double.round(decimals: Int): Double {
-        var multiplier = 1.0
-        repeat(decimals) { multiplier *= 10 }
-        return kotlin.math.round(this * multiplier) / multiplier
-    }
 }
