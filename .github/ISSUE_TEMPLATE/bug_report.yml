@@ -1,0 +1,40 @@
+name: Bug report
+description: A function fails, returns a wrong id or does not build on a target.
+labels: [bug]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: Platform and target
+      description: The Kotlin target and runtime where it happens.
+      placeholder: JVM 21 / iosArm64 / JS browser (Chrome 130)
+    validations:
+      required: true
+  - type: input
+    id: release
+    attributes:
+      label: nanoid-kotlin release
+      description: The version in your dependency declaration.
+      placeholder: 2.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The code you ran, ideally a minimal snippet that reproduces the problem.
+      render: kotlin
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+      description: What you expected, what happened instead, and the full error message if there was one.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Kotlin version, build tool, a custom `random` if you pass one, anything else that may matter.

@@ -1,22 +1,17 @@
 /*
  * Copyright 2026 Viascom Ltd liab. Co
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package io.viascom.nanoid
@@ -40,7 +35,7 @@ import kotlin.random.Random
  * val id = NanoId.generate()
  * ```
  */
-object NanoId {
+public object NanoId {
 
     private const val DEFAULT_SIZE = 21
     private const val DEFAULT_ALPHABET = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -59,7 +54,7 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun generate(
+    public fun generate(
         size: Int = DEFAULT_SIZE,
         alphabet: String = DEFAULT_ALPHABET,
         additionalBytesFactor: Double = DEFAULT_ADDITIONAL_BYTES_FACTOR,
@@ -87,7 +82,7 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun generatePrefixed(
+    public fun generatePrefixed(
         prefix: String,
         size: Int = DEFAULT_SIZE,
         alphabet: String = DEFAULT_ALPHABET,
@@ -112,7 +107,7 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
+    public fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
         require(size > 0) { "size must be greater than zero." }
         val symbols = symbolsOf(alphabet)
         val symbolCount = symbols?.size ?: alphabet.length
@@ -132,7 +127,7 @@ object NanoId {
      * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters.
      */
     @JvmStatic
-    fun calculateAdditionalBytesFactor(alphabet: String): Double {
+    public fun calculateAdditionalBytesFactor(alphabet: String): Double {
         val symbolCount = symbolCount(alphabet)
         val mask = maskFor(symbolCount)
         return round((1 + abs((mask - symbolCount.toDouble()) / symbolCount)) * 100) / 100
@@ -146,7 +141,7 @@ object NanoId {
      * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters.
      */
     @JvmStatic
-    fun calculateMask(alphabet: String): Int = maskFor(symbolCount(alphabet))
+    public fun calculateMask(alphabet: String): Int = maskFor(symbolCount(alphabet))
 
     /**
      * Calculates the number of random bytes to generate in each iteration for a given size and alphabet.
@@ -159,7 +154,7 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int {
+    public fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int {
         val symbolCount = symbolCount(alphabet)
         return stepFor(size, symbolCount, maskFor(symbolCount), additionalBytesFactor)
     }

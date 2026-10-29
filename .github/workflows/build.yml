@@ -7,21 +7,30 @@ on:
     paths-ignore:
       - '**.md'
       - '.github/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     name: Build Pipeline
+    # Branches in this repo already build on push; pull_request only adds forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: macos-latest
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up Java JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'zulu'
           java-version: '21'
@@ -33,13 +42,13 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: Build with Gradle
         run: ./gradlew build --warn --full-stacktrace
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-libs
           path: build/libs
