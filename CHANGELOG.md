@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `generatePrefixed()` for typed IDs such as `usr_W9SPTSD4dQk2N5S39mLnT`, matching the prefix support in
+  nanoid-postgres and nanoid-mysql-mariadb. The prefix does not count towards `size`.
 - Wasm/WASI and Android Native (`androidNativeArm32`, `androidNativeArm64`, `androidNativeX86`, `androidNativeX64`)
   targets.
 - The published javadoc jars contain the generated API reference.

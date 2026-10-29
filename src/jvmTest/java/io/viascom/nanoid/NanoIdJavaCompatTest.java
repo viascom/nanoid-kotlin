@@ -39,6 +39,9 @@ class NanoIdJavaCompatTest {
         assertEquals(21, NanoId.generate(21, "ABC123").length());
         assertEquals(21, NanoId.generate(21, ALPHABET, 1.6).length());
         assertEquals(10, NanoId.generateOptimized(10, ALPHABET, 63, 16).length());
+        assertEquals(25, NanoId.generatePrefixed("usr_").length());
+        assertEquals(14, NanoId.generatePrefixed("ord_", 10).length());
+        assertEquals(14, NanoId.generatePrefixed("ord_", 10, "ABC123").length());
     }
 
     @Test

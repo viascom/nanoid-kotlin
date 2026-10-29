@@ -12,4 +12,5 @@ final object io.viascom.nanoid/NanoId { // io.viascom.nanoid/NanoId|null[0]
     final fun calculateStep(kotlin/Int, kotlin/String, kotlin/Double = ...): kotlin/Int // io.viascom.nanoid/NanoId.calculateStep|calculateStep(kotlin.Int;kotlin.String;kotlin.Double){}[0]
     final fun generate(kotlin/Int = ..., kotlin/String = ..., kotlin/Double = ..., kotlin.random/Random = ...): kotlin/String // io.viascom.nanoid/NanoId.generate|generate(kotlin.Int;kotlin.String;kotlin.Double;kotlin.random.Random){}[0]
     final fun generateOptimized(kotlin/Int, kotlin/String, kotlin/Int, kotlin/Int, kotlin.random/Random = ...): kotlin/String // io.viascom.nanoid/NanoId.generateOptimized|generateOptimized(kotlin.Int;kotlin.String;kotlin.Int;kotlin.Int;kotlin.random.Random){}[0]
+    final fun generatePrefixed(kotlin/String, kotlin/Int = ..., kotlin/String = ..., kotlin/Double = ..., kotlin.random/Random = ...): kotlin/String // io.viascom.nanoid/NanoId.generatePrefixed|generatePrefixed(kotlin.String;kotlin.Int;kotlin.String;kotlin.Double;kotlin.random.Random){}[0]
 }

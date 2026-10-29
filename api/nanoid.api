@@ -14,5 +14,11 @@ public final class io/viascom/nanoid/NanoId {
 	public static final fun generateOptimized (ILjava/lang/String;II)Ljava/lang/String;
 	public static final fun generateOptimized (ILjava/lang/String;IILkotlin/random/Random;)Ljava/lang/String;
 	public static synthetic fun generateOptimized$default (ILjava/lang/String;IILkotlin/random/Random;ILjava/lang/Object;)Ljava/lang/String;
+	public static final fun generatePrefixed (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun generatePrefixed (Ljava/lang/String;I)Ljava/lang/String;
+	public static final fun generatePrefixed (Ljava/lang/String;ILjava/lang/String;)Ljava/lang/String;
+	public static final fun generatePrefixed (Ljava/lang/String;ILjava/lang/String;D)Ljava/lang/String;
+	public static final fun generatePrefixed (Ljava/lang/String;ILjava/lang/String;DLkotlin/random/Random;)Ljava/lang/String;
+	public static synthetic fun generatePrefixed$default (Ljava/lang/String;ILjava/lang/String;DLkotlin/random/Random;ILjava/lang/Object;)Ljava/lang/String;
 }
 

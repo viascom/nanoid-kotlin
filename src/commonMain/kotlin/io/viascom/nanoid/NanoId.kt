@@ -37,6 +37,10 @@ import kotlin.random.Random
  */
 public object NanoId {
 
+    private const val DEFAULT_SIZE = 21
+    private const val DEFAULT_ALPHABET = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    private const val DEFAULT_ADDITIONAL_BYTES_FACTOR = 1.6
+
     /**
      * Generates a random string based on specified or default parameters.
      *
@@ -51,9 +55,9 @@ public object NanoId {
     @JvmStatic
     @JvmOverloads
     public fun generate(
-        size: Int = 21,
-        alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        additionalBytesFactor: Double = 1.6,
+        size: Int = DEFAULT_SIZE,
+        alphabet: String = DEFAULT_ALPHABET,
+        additionalBytesFactor: Double = DEFAULT_ADDITIONAL_BYTES_FACTOR,
         random: Random = CryptographyRandom.Default,
     ): String {
         require(size > 0) { "size must be greater than zero." }
@@ -64,6 +68,27 @@ public object NanoId {
 
         return generateOptimized(size, alphabet, mask, step, random)
     }
+
+    /**
+     * Generates a random string like [generate] and prepends a fixed prefix, for typed IDs such as `usr_W9SPTSD4dQk2N5S39mLnT`.
+     *
+     * @param prefix The text prepended to the generated string. It does not count towards `size`.
+     * @param size The desired length of the generated string, without the prefix. Default is 21.
+     * @param alphabet The set of characters to choose from for generating the string. Default includes alphanumeric characters along with "_" and "-".
+     * @param additionalBytesFactor The additional bytes factor used for calculating the step size. Default is 1.6.
+     * @param random The random number generator to use. Default is the platform's secure random via [CryptographyRandom].
+     * @return The prefix followed by the generated random string.
+     * @throws IllegalArgumentException under the same conditions as [generate].
+     */
+    @JvmStatic
+    @JvmOverloads
+    public fun generatePrefixed(
+        prefix: String,
+        size: Int = DEFAULT_SIZE,
+        alphabet: String = DEFAULT_ALPHABET,
+        additionalBytesFactor: Double = DEFAULT_ADDITIONAL_BYTES_FACTOR,
+        random: Random = CryptographyRandom.Default,
+    ): String = prefix + generate(size, alphabet, additionalBytesFactor, random)
 
     /**
      * Generates an optimized random string of a specified size using the given alphabet, mask, and step.

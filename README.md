@@ -63,11 +63,20 @@ val idWithCustomLength = NanoId.generate(10)
 val idWithCustomAlphabet = NanoId.generate(alphabet = "ABC123")
 ```
 
+For typed IDs, `generatePrefixed()` puts a fixed marker in front, so anyone reading an ID can tell which entity it
+belongs to. The prefix does not count towards `size`, so the ID is `prefix.length + size` characters long:
+
+```kotlin
+val userId = NanoId.generatePrefixed("usr_") // usr_W9SPTSD4dQk2N5S39mLnT
+val orderId = NanoId.generatePrefixed("ord_", size = 10)
+```
+
 From Java, every function is a static method:
 
 ```java
 String id = NanoId.generate();
 String shortId = NanoId.generate(10, "ABC123");
+String userId = NanoId.generatePrefixed("usr_");
 ```
 
 The [API reference](https://javadoc.io/doc/io.viascom.nanoid/nanoid) lists every function and parameter.
