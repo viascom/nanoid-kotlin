@@ -1,4 +1,5 @@
 version: 2
+# The 3-day cooldown mirrors the Viascom minimum release age; it does not delay security updates.
 updates:
 
   # Enable version updates for GitHub Actions
@@ -9,6 +10,8 @@ updates:
       time: "15:00"
       timezone: "Europe/Zurich"
     target-branch: "main"
+    cooldown:
+      default-days: 3
     labels:
       - "github-actions"
       - "dependencies"
@@ -21,6 +24,8 @@ updates:
       time: "15:00"
       timezone: "Europe/Zurich"
     target-branch: "main"
+    cooldown:
+      default-days: 3
     labels:
       - "gradle"
       - "dependencies"
