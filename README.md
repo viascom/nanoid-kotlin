@@ -141,8 +141,9 @@ benefits of its optimized performance.
 
 Bug reports, ideas and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to build the
 project and what a change needs. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Report
-security problems privately as described in [SECURITY.md](SECURITY.md). Changes per version are listed in the
-[releases](https://github.com/viascom/nanoid-kotlin/releases).
+security problems privately as described in [SECURITY.md](SECURITY.md), and ask questions in
+[Discussions](https://github.com/viascom/nanoid-kotlin/discussions). Changes per version are listed in the
+[changelog](CHANGELOG.md).
 
 ## 🖥️ Authors
 

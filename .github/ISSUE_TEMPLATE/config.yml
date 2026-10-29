@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Question
+    url: https://github.com/viascom/nanoid-kotlin/discussions
+    about: Ask how to use the library in Discussions.
   - name: Report a security vulnerability
     url: https://github.com/viascom/nanoid-kotlin/security/advisories/new
     about: Report vulnerabilities privately, not in a public issue.
