@@ -1,22 +1,24 @@
 name: Feature request
-description: Suggest a new feature or an alignment with ai/nanoid.
+description: Suggest a new function, parameter or improvement.
 labels: [enhancement]
 body:
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: What you are trying to do and why the current API does not cover it.
+      description: What you are trying to do and why the current functions do not cover it.
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposal
+      label: Proposed solution
+      description: How the function or parameter should behave, ideally with an example call and its result.
+      render: kotlin
     validations:
       required: true
-  - type: input
-    id: upstream
+  - type: textarea
+    id: alternatives
     attributes:
-      label: Upstream reference
-      description: Link to the ai/nanoid commit, release or issue, if this ports something from there.
+      label: Alternatives and parity
+      description: Workarounds you considered, and whether ai/nanoid, nanoid-postgres or nanoid-mysql-mariadb already offer this.

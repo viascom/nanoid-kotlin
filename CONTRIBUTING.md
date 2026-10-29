@@ -7,7 +7,7 @@ Contributions are welcome. Everyone taking part follows the [Code of Conduct](CO
   anything bigger than a small fix, agree on the approach there before you write code.
 - **Security problems** must not go into a public issue; see [SECURITY.md](SECURITY.md).
 
-## Building
+## Development setup
 
 You need JDK 17 or newer; Gradle downloads the toolchain it needs.
 
