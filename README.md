@@ -1,6 +1,7 @@
 # Nano ID for Kotlin Multiplatform
 
 <a href="https://github.com/viascom/nanoid-kotlin/releases"><img src="https://img.shields.io/maven-central/v/io.viascom.nanoid/nanoid" alt="Maven central"></a>
+<a href="https://github.com/viascom/nanoid-kotlin/actions/workflows/build.yml"><img src="https://github.com/viascom/nanoid-kotlin/actions/workflows/build.yml/badge.svg" alt="Build"></a>
 <img src="https://img.shields.io/badge/Kotlin-2.4.21-%238052ff?logo=kotlin" alt="Kotlin Version">
 <img src="https://img.shields.io/badge/Multiplatform-JVM%20%7C%20JS%20%7C%20Wasm%20%7C%20iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux%20%7C%20Windows%20%7C%20Android%20Native-blue" alt="Kotlin Multiplatform">
 <a href="http://www.apache.org/licenses/"><img src="https://img.shields.io/badge/license-Apache_2.0-blue.svg" alt="license Apache 2.0"></a>
@@ -61,6 +62,15 @@ val id = NanoId.generate()
 val idWithCustomLength = NanoId.generate(10)
 val idWithCustomAlphabet = NanoId.generate(alphabet = "ABC123")
 ```
+
+From Java, every function is a static method:
+
+```java
+String id = NanoId.generate();
+String shortId = NanoId.generate(10, "ABC123");
+```
+
+The [API reference](https://javadoc.io/doc/io.viascom.nanoid/nanoid) lists every function and parameter.
 
 ## Migrating from 1.x
 
@@ -127,17 +137,12 @@ val id = NanoId.generateOptimized(10, "_-0123456789abcdefghijklmnopqrstuvwxyzABC
 By following this guide, you can seamlessly integrate the `NanoId.generateOptimized()` function into your projects and enjoy the
 benefits of its optimized performance.
 
-## 🌱 Contributors Welcome
+## Contributing
 
-- 🐛 **Encountered a Bug?** Let us know with an issue. Every bit of feedback helps enhance the project.
-
-- 💡 **Interested in Contributing Code?** Simply fork and submit a pull request. Every contribution, no matter its size, is valued.
-
-- 📣 **Have Some Ideas?** We're always open to suggestions. Initiate an issue for discussions or to share your insights.
-
-All relevant details about the project can be found in this README.
-
-Your active participation 🤝 is a cornerstone of **nanoid-kotlin**. Thank you for joining us on this journey.
+Bug reports, ideas and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to build the
+project and what a change needs. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Report
+security problems privately as described in [SECURITY.md](SECURITY.md). Changes per version are listed in the
+[releases](https://github.com/viascom/nanoid-kotlin/releases).
 
 ## 🖥️ Authors
 

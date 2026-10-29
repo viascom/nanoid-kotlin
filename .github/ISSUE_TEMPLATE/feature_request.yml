@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a new feature or an alignment with ai/nanoid.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you are trying to do and why the current API does not cover it.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: input
+    id: upstream
+    attributes:
+      label: Upstream reference
+      description: Link to the ai/nanoid commit, release or issue, if this ports something from there.
