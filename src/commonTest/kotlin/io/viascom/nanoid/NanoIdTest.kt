@@ -152,6 +152,33 @@ class NanoIdTest {
     }
 
     // ------------------------------------------------------------------
+    // Prefixed IDs (parity with nanoid-postgres and nanoid-mysql-mariadb)
+    // ------------------------------------------------------------------
+
+    @Test
+    fun generatePrefixedPrependsThePrefixWithoutCountingItTowardsTheSize() {
+        val id = NanoId.generatePrefixed("usr_")
+        assertEquals(25, id.length)
+        assertTrue(id.startsWith("usr_"))
+        assertTrue(id.removePrefix("usr_").all { it in defaultAlphabet })
+        assertEquals(14, NanoId.generatePrefixed("ord_", size = 10).length)
+    }
+
+    @Test
+    fun generatePrefixedGeneratesTheSameIdAsGenerateForTheSameSeed() {
+        assertEquals("usr_$GOLDEN_DEFAULT", NanoId.generatePrefixed("usr_", random = Random(42)))
+        assertEquals("usr_$GOLDEN_ABC123", NanoId.generatePrefixed("usr_", alphabet = "ABC123", random = Random(42)))
+        assertEquals(GOLDEN_DEFAULT, NanoId.generatePrefixed("", random = Random(42)))
+    }
+
+    @Test
+    fun generatePrefixedValidatesLikeGenerate() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generatePrefixed("usr_", size = 0) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generatePrefixed("usr_", alphabet = "") }
+        assertFailsWith<IllegalArgumentException> { NanoId.generatePrefixed("usr_", additionalBytesFactor = 0.9) }
+    }
+
+    // ------------------------------------------------------------------
     // Determinism (kotlin.random.Random is XorWow, spec-stable everywhere)
     // ------------------------------------------------------------------
 

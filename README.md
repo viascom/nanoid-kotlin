@@ -62,6 +62,14 @@ val idWithCustomLength = NanoId.generate(10)
 val idWithCustomAlphabet = NanoId.generate(alphabet = "ABC123")
 ```
 
+For typed IDs, `generatePrefixed()` puts a fixed marker in front, so anyone reading an ID can tell which entity it
+belongs to. The prefix does not count towards `size`, so the ID is `prefix.length + size` characters long:
+
+```kotlin
+val userId = NanoId.generatePrefixed("usr_") // usr_W9SPTSD4dQk2N5S39mLnT
+val orderId = NanoId.generatePrefixed("ord_", size = 10)
+```
+
 ## Migrating from 1.x
 
 Version 2.0.0 is a Kotlin Multiplatform release. The API is unchanged for all default-parameter
