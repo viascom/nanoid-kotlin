@@ -170,6 +170,12 @@ class NanoIdTest {
     }
 
     @Test
+    fun generateRejectsANonFiniteAdditionalBytesFactor() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = "abc", additionalBytesFactor = Double.POSITIVE_INFINITY) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = "abc", additionalBytesFactor = Double.NaN) }
+    }
+
+    @Test
     fun generateRejectsAnAdditionalBytesFactorBelowOne() {
         assertFailsWith<IllegalArgumentException> { NanoId.generate(additionalBytesFactor = 0.9) }
     }
@@ -200,6 +206,18 @@ class NanoIdTest {
     @Test
     fun calculateMaskForASingleCharacterAlphabetIs1() {
         assertEquals(1, NanoId.calculateMask("x"))
+    }
+
+    @Test
+    fun helpersRejectAnInvalidAlphabet() {
+        val tooLong = "a".repeat(257)
+        for (alphabet in listOf("", tooLong)) {
+            val message = "alphabet must contain between 1 and 256 symbols."
+            assertEquals(message, assertFailsWith<IllegalArgumentException> { NanoId.calculateMask(alphabet) }.message)
+            assertEquals(message, assertFailsWith<IllegalArgumentException> { NanoId.calculateStep(21, alphabet) }.message)
+            assertEquals(message, assertFailsWith<IllegalArgumentException> { NanoId.calculateStep(21, alphabet, 1.6) }.message)
+            assertEquals(message, assertFailsWith<IllegalArgumentException> { NanoId.calculateAdditionalBytesFactor(alphabet) }.message)
+        }
     }
 
     @Test
@@ -333,9 +351,18 @@ class NanoIdTest {
     }
 
     @Test
-    fun generateOptimizedRejectsAMaskThatIsNotAPowerOfTwoMinusOne() {
+    fun generateOptimizedRejectsAMaskThatSkipsAlphabetIndices() {
         assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 100, 5) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abcd", 5, 5) }
         assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 64, 32) }
+    }
+
+    @Test
+    fun generateOptimizedAcceptsAnyMaskThatReachesEveryAlphabetIndex() {
+        val id = NanoId.generateOptimized(100, "abc", 131, 40)
+        assertEquals(100, id.length)
+        assertEquals("abc".toSet(), id.toSet())
+        assertEquals("xxxxx", NanoId.generateOptimized(5, "x", 0, 5))
     }
 
     @Test

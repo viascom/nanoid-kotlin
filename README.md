@@ -103,8 +103,9 @@ lower memory overhead. While it provides a more efficient mechanism to generate 
 know precisely how you want to use it.
 
 🚫 **Warning**: `NanoId.generateOptimized()` skips the step calculation that `NanoId.generate()` does for you. `mask` must be
-`(2^n) - 1` with `2^n` at least the alphabet size and at most 256 (use `NanoId.calculateMask()`), and `step` must be greater
-than zero; it throws `IllegalArgumentException` otherwise. A `size` of zero returns an empty string.
+within 0..255 and contain every bit up to the highest alphabet index, or some symbols could never be produced;
+`NanoId.calculateMask()` returns the smallest such mask. `step` must be greater than zero. It throws
+`IllegalArgumentException` otherwise. A `size` of zero returns an empty string.
 
 ### Example Usage
 
