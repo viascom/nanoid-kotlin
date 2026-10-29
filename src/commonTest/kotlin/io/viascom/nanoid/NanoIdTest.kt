@@ -79,6 +79,36 @@ class NanoIdTest {
     }
 
     @Test
+    fun generateSupportsEmojiAlphabets() {
+        val alphabet = "😀😁🎉"
+        val symbols = symbolsIn(NanoId.generate(size = 300, alphabet = alphabet, random = Random(5)))
+        assertEquals(300, symbols.size)
+        assertEquals(symbolsIn(alphabet).toSet(), symbols.toSet())
+    }
+
+    @Test
+    fun generateSupportsAlphabetsMixingBmpAndEmojiSymbols() {
+        val symbols = symbolsIn(NanoId.generate(size = 200, alphabet = "ab😀😁", random = Random(6)))
+        assertEquals(200, symbols.size)
+        assertEquals(setOf("a", "b", "😀", "😁"), symbols.toSet())
+    }
+
+    @Test
+    fun generateCountsAnEmojiAsOneSymbolTowardsThe256Limit() {
+        val bmpSymbols = (0 until 255).map { Char(0x100 + it) }.joinToString("")
+        assertEquals(50, symbolsIn(NanoId.generate(size = 50, alphabet = bmpSymbols + "😀")).size)
+        assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = bmpSymbols + "😀😁") }
+    }
+
+    @Test
+    fun generateRejectsAnAlphabetWithAnUnpairedSurrogate() {
+        for (alphabet in listOf("ab\uD83D", "\uDE00ab", "a\uDE00\uD83Db")) {
+            val error = assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = alphabet) }
+            assertEquals("alphabet must not contain unpaired surrogates.", error.message)
+        }
+    }
+
+    @Test
     fun generateAcceptsAnAdditionalBytesFactorOfExactlyOne() {
         assertEquals(21, NanoId.generate(additionalBytesFactor = 1.0).length)
         assertEquals(21, NanoId.generate(alphabet = "ABC123", additionalBytesFactor = 1.0).length)
@@ -282,6 +312,14 @@ class NanoIdTest {
     }
 
     @Test
+    fun helpersCountAnEmojiAsOneSymbol() {
+        assertEquals(1, NanoId.calculateMask("😀😁"))
+        assertEquals(3, NanoId.calculateMask("😀😁🎉"))
+        assertEquals(NanoId.calculateStep(21, "abc"), NanoId.calculateStep(21, "😀😁🎉"))
+        assertEquals(NanoId.calculateAdditionalBytesFactor("abc"), NanoId.calculateAdditionalBytesFactor("😀😁🎉"))
+    }
+
+    @Test
     fun calculateMaskIsTheSmallestPowerOfTwoMinusOneCoveringTheAlphabet() {
         val expected = mapOf(2 to 1, 3 to 3, 4 to 3, 5 to 7, 63 to 63, 64 to 63, 65 to 127, 128 to 127, 129 to 255, 256 to 255)
         for ((length, mask) in expected) {
@@ -376,9 +414,18 @@ class NanoIdTest {
     // ------------------------------------------------------------------
 
     @Test
-    fun generateOptimizedReturnsAnEmptyStringForSizeZero() {
-        assertEquals("", NanoId.generateOptimized(0, "abc", 3, 5))
-        assertEquals("", NanoId.generateOptimized(0, defaultAlphabet, 63, 16))
+    fun generateOptimizedRejectsSizeZero() {
+        val error = assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(0, "abc", 3, 5) }
+        assertEquals("size must be greater than zero.", error.message)
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(0, defaultAlphabet, 63, 16) }
+    }
+
+    @Test
+    fun generateOptimizedSupportsEmojiAlphabets() {
+        val alphabet = "😀😁🎉"
+        val symbols = symbolsIn(NanoId.generateOptimized(30, alphabet, NanoId.calculateMask(alphabet), 60))
+        assertEquals(30, symbols.size)
+        assertTrue(symbols.all { it in symbolsIn(alphabet) })
     }
 
     @Test
@@ -457,6 +504,19 @@ class NanoIdTest {
             for (i in array.indices) array[i] = sequence[i % sequence.size]
             return array
         }
+    }
+
+    private fun symbolsIn(text: String): List<String> {
+        val symbols = mutableListOf<String>()
+        var i = 0
+        while (i < text.length) {
+            val isPair = text[i].isHighSurrogate() && i + 1 < text.length && text[i + 1].isLowSurrogate()
+            assertTrue(isPair || !text[i].isSurrogate(), "unpaired surrogate at index $i")
+            val width = if (isPair) 2 else 1
+            symbols.add(text.substring(i, i + width))
+            i += width
+        }
+        return symbols
     }
 
     private fun assertFlatDistribution(alphabet: String, ids: List<String>) {
