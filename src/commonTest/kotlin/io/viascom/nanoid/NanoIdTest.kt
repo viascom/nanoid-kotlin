@@ -60,6 +60,31 @@ class NanoIdTest {
     }
 
     @Test
+    fun generateWithTheDefaultAlphabetProducesUrlSafeIds() {
+        val urlSafe = Regex("^[A-Za-z0-9_-]{21}$")
+        repeat(100) {
+            val id = NanoId.generate()
+            assertTrue(urlSafe.matches(id), "not URL-safe: $id")
+        }
+    }
+
+    @Test
+    fun generateSupportsNonAsciiAlphabets() {
+        val alphabet = "абвгд"
+        repeat(100) {
+            val id = NanoId.generate(size = 10, alphabet = alphabet)
+            assertEquals(10, id.length)
+            assertTrue(id.all { it in alphabet }, "unexpected character in $id")
+        }
+    }
+
+    @Test
+    fun generateAcceptsAnAdditionalBytesFactorOfExactlyOne() {
+        assertEquals(21, NanoId.generate(additionalBytesFactor = 1.0).length)
+        assertEquals(21, NanoId.generate(alphabet = "ABC123", additionalBytesFactor = 1.0).length)
+    }
+
+    @Test
     fun generateEventuallyUsesEveryCharacterOfTheAlphabet() {
         val alphabet = "ABC123"
         val seen = HashSet<Char>()
@@ -76,6 +101,20 @@ class NanoIdTest {
         val ids = HashSet<String>()
         repeat(10_000) { ids.add(NanoId.generate()) }
         assertEquals(10_000, ids.size)
+    }
+
+    // Seeded, so the 0.05 bound from upstream is checked without flakiness on every target.
+    @Test
+    fun generateHasAFlatDistributionWithThePowerOfTwoDefaultAlphabet() {
+        val random = Random(1)
+        assertFlatDistribution(defaultAlphabet, List(50_000) { NanoId.generate(random = random) })
+    }
+
+    @Test
+    fun generateHasAFlatDistributionWithANonPowerOfTwoAlphabet() {
+        val alphabet = "abcdefghijklmnopqrstuvwxyz"
+        val random = Random(1)
+        assertFlatDistribution(alphabet, List(50_000) { NanoId.generate(size = 30, alphabet = alphabet, random = random) })
     }
 
     // ------------------------------------------------------------------
@@ -105,7 +144,8 @@ class NanoIdTest {
 
     @Test
     fun generateRejectsAnEmptyAlphabet() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = "") }
+        val error = assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = "") }
+        assertEquals("alphabet must contain between 1 and 256 symbols.", error.message)
     }
 
     @Test
@@ -119,7 +159,8 @@ class NanoIdTest {
     @Test
     fun generateRejectsAnAlphabetLargerThan256Characters() {
         val alphabet = (0..256).map { it.toChar() }.joinToString("")
-        assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = alphabet) }
+        val error = assertFailsWith<IllegalArgumentException> { NanoId.generate(alphabet = alphabet) }
+        assertEquals("alphabet must contain between 1 and 256 symbols.", error.message)
     }
 
     @Test
@@ -162,6 +203,14 @@ class NanoIdTest {
     }
 
     @Test
+    fun calculateMaskIsTheSmallestPowerOfTwoMinusOneCoveringTheAlphabet() {
+        val expected = mapOf(2 to 1, 3 to 3, 4 to 3, 5 to 7, 63 to 63, 64 to 63, 65 to 127, 128 to 127, 129 to 255, 256 to 255)
+        for ((length, mask) in expected) {
+            assertEquals(mask, NanoId.calculateMask("a".repeat(length)), "alphabet length $length")
+        }
+    }
+
+    @Test
     fun calculateAdditionalBytesFactorForTheDefaultAlphabet() {
         assertEquals(1.02, NanoId.calculateAdditionalBytesFactor(defaultAlphabet))
     }
@@ -195,6 +244,59 @@ class NanoIdTest {
     }
 
     @Test
+    fun generateOptimizedMatchesGenerateForTheSameSeed() {
+        val alphabet = "ABC123"
+        val step = NanoId.calculateStep(50, alphabet, 1.6)
+        assertEquals(
+            NanoId.generate(50, alphabet, 1.6, Random(7)),
+            NanoId.generateOptimized(50, alphabet, NanoId.calculateMask(alphabet), step, Random(7)),
+        )
+    }
+
+    // ------------------------------------------------------------------
+    // Large IDs (over the 65536-byte Web Crypto limit per getRandomValues call)
+    // ------------------------------------------------------------------
+
+    @Test
+    fun generateProducesLargeIdsWithAPowerOfTwoAlphabet() {
+        val id = NanoId.generate(size = 70_000)
+        assertEquals(70_000, id.length)
+        assertTrue(id.all { it in defaultAlphabet })
+    }
+
+    @Test
+    fun generateProducesLargeIdsWithANonPowerOfTwoAlphabet() {
+        val id = NanoId.generate(size = 70_000, alphabet = "ABC123")
+        assertEquals(70_000, id.length)
+        assertTrue(id.all { it in "ABC123" })
+    }
+
+    // ------------------------------------------------------------------
+    // Byte mapping with a fixed byte sequence (ported from upstream customRandom tests)
+    // ------------------------------------------------------------------
+
+    @Test
+    fun generateRejectsMaskedBytesOutsideTheAlphabet() {
+        val sequence = intArrayOf(2, 255, 3, 7, 7, 7, 7, 7, 0, 1)
+        assertEquals("cdac", NanoId.generate(size = 4, alphabet = "abcde", random = SequenceRandom(*sequence)))
+        assertEquals("cdabcdabcdabcdabcc", NanoId.generate(size = 18, alphabet = "abcde", random = SequenceRandom(*sequence)))
+    }
+
+    @Test
+    fun generateMapsEveryByteForAPowerOfTwoAlphabet() {
+        assertEquals("cddd", NanoId.generate(size = 4, alphabet = "abcd", random = SequenceRandom(2, 255, 3, 7)))
+    }
+
+    @Test
+    fun generateOptimizedRejectsBytesAboveTheAlphabetWhenTheMaskIsLargerThanNeeded() {
+        assertEquals("cdcd", NanoId.generateOptimized(4, "abcd", 7, 4, SequenceRandom(2, 255, 3, 7)))
+    }
+
+    // ------------------------------------------------------------------
+    // generateOptimized validation
+    // ------------------------------------------------------------------
+
+    @Test
     fun generateOptimizedReturnsAnEmptyStringForSizeZero() {
         assertEquals("", NanoId.generateOptimized(0, "abc", 3, 5))
         assertEquals("", NanoId.generateOptimized(0, defaultAlphabet, 63, 16))
@@ -213,13 +315,14 @@ class NanoIdTest {
     @Test
     fun generateOptimizedRejectsAnAlphabetLargerThan256Characters() {
         val alphabet = (0 until 257).map { Char(it + 0x100) }.joinToString("")
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, alphabet, 255, 5) }
+        val error = assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, alphabet, 255, 5) }
+        assertEquals("alphabet must contain between 1 and 256 symbols.", error.message)
     }
 
     @Test
     fun generateOptimizedRejectsAMaskOutsideTheByteRange() {
         assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", -1, 5) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 256, 5) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 511, 5) }
     }
 
     @Test
@@ -255,5 +358,24 @@ class NanoIdTest {
         // survive: seeded java randoms are part of the API dropped in 2.0.0.
         private const val GOLDEN_DEFAULT = "oaJT_uZB8ZFBqL5TFLc3A"
         private const val GOLDEN_ABC123 = "C2BAAC12BB1B3AC3CBCAA"
+    }
+
+    private class SequenceRandom(vararg values: Int) : Random() {
+        private val sequence = values.map { it.toByte() }
+
+        override fun nextBits(bitCount: Int): Int = throw UnsupportedOperationException()
+
+        override fun nextBytes(array: ByteArray): ByteArray {
+            for (i in array.indices) array[i] = sequence[i % sequence.size]
+            return array
+        }
+    }
+
+    private fun assertFlatDistribution(alphabet: String, ids: List<String>) {
+        val counts = ids.flatMap { it.asIterable() }.groupingBy { it }.eachCount()
+        assertEquals(alphabet.toSet(), counts.keys)
+        val totalChars = ids.sumOf { it.length }
+        val shares = counts.values.map { it.toDouble() * alphabet.length / totalChars }
+        assertTrue(shares.max() - shares.min() <= 0.05, "distribution spread ${shares.max() - shares.min()}")
     }
 }
