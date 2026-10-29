@@ -80,6 +80,34 @@ class NanoIdTest {
     }
 
     @Test
+    fun generateAcceptsALargeAdditionalBytesFactor() {
+        val id = NanoId.generate(alphabet = "ABC123", additionalBytesFactor = 1000.0)
+        assertEquals(21, id.length)
+        assertTrue(id.all { it in "ABC123" })
+    }
+
+    @Test
+    fun generateAcceptsTheSmallestValues() {
+        assertEquals("x", NanoId.generate(size = 1, alphabet = "x", additionalBytesFactor = 1.0))
+    }
+
+    @Test
+    fun generateReachesEverySymbolForAlphabetsAroundPowersOfTwo() {
+        for (length in intArrayOf(2, 16, 63, 64, 65)) {
+            val alphabet = (0 until length).map { Char('!'.code + it) }.joinToString("")
+            val seen = NanoId.generate(size = 5_000, alphabet = alphabet, random = Random(length)).toSet()
+            assertEquals(alphabet.toSet(), seen, "alphabet length $length")
+        }
+    }
+
+    @Test
+    fun generateWeightsDuplicateSymbolsByHowOftenTheyAppear() {
+        val id = NanoId.generate(size = 30_000, alphabet = "aab", random = Random(3))
+        val shareOfA = id.count { it == 'a' }.toDouble() / id.length
+        assertTrue(shareOfA in 0.64..0.69, "share of 'a' was $shareOfA")
+    }
+
+    @Test
     fun generateEventuallyUsesEveryCharacterOfTheAlphabet() {
         val alphabet = "ABC123"
         val seen = HashSet<Char>()
@@ -110,6 +138,12 @@ class NanoIdTest {
         val alphabet = "abcdefghijklmnopqrstuvwxyz"
         val random = Random(1)
         assertFlatDistribution(alphabet, List(50_000) { NanoId.generate(size = 30, alphabet = alphabet, random = random) })
+    }
+
+    @Test
+    fun generateOptimizedHasAFlatDistributionWhenTheMaskIsLargerThanNeeded() {
+        val random = Random(1)
+        assertFlatDistribution(defaultAlphabet, List(50_000) { NanoId.generateOptimized(21, defaultAlphabet, 255, 100, random) })
     }
 
     // ------------------------------------------------------------------
