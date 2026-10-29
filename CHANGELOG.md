@@ -10,6 +10,8 @@ All notable changes to this project are documented here. The format follows
 
 - `generatePrefixed()` for typed IDs such as `usr_W9SPTSD4dQk2N5S39mLnT`, matching the prefix support in
   nanoid-postgres and nanoid-mysql-mariadb. The prefix does not count towards `size`.
+- Alphabets with emoji and other characters outside the Basic Multilingual Plane. Each counts as one symbol, matching
+  nanoid-postgres and nanoid-mysql-mariadb.
 - Wasm/WASI and Android Native (`androidNativeArm32`, `androidNativeArm64`, `androidNativeX86`, `androidNativeX64`)
   targets.
 - The published javadoc jars contain the generated API reference.
@@ -17,9 +19,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
-- `generateOptimized()` validates its arguments and throws `IllegalArgumentException` for a negative `size`, an
-  alphabet that is empty or longer than 256 symbols, a `step` of zero or less, or a `mask` outside 0..255 or missing a
-  bit up to the highest alphabet index. A `size` of 0 returns an empty string.
+- `generateOptimized()` validates its arguments and throws `IllegalArgumentException` for a `size` of zero or less, an
+  alphabet that is empty, longer than 256 symbols or contains an unpaired surrogate, a `step` of zero or less, or a
+  `mask` outside 0..255 or missing a bit up to the highest alphabet index.
 - `calculateMask()`, `calculateStep()` and `calculateAdditionalBytesFactor()` throw `IllegalArgumentException` for an
   empty or over-256 alphabet, and `generate()` rejects a non-finite `additionalBytesFactor`.
 - Built with Kotlin 2.4.21 and Gradle 9.8.2.
@@ -30,6 +32,7 @@ All notable changes to this project are documented here. The format follows
 
 - `generateOptimized()` no longer hangs for a `size` of 0 or a `step` of 0, and no longer silently produces IDs from
   part of the alphabet when the mask is too small.
+- Alphabets with emoji no longer produce IDs with invalid Unicode.
 
 ## [2.0.1] - 2026-08-09
 

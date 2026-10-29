@@ -63,6 +63,9 @@ val idWithCustomLength = NanoId.generate(10)
 val idWithCustomAlphabet = NanoId.generate(alphabet = "ABC123")
 ```
 
+An alphabet has 1 to 256 symbols. Emoji and other characters outside the Basic Multilingual Plane count as one symbol
+each, so `NanoId.generate(alphabet = "😀😁🎉")` returns 21 emoji.
+
 For typed IDs, `generatePrefixed()` puts a fixed marker in front, so anyone reading an ID can tell which entity it
 belongs to. The prefix does not count towards `size`, so the ID is `prefix.length + size` characters long:
 
@@ -124,7 +127,7 @@ know precisely how you want to use it.
 🚫 **Warning**: `NanoId.generateOptimized()` skips the step calculation that `NanoId.generate()` does for you. `mask` must be
 within 0..255 and contain every bit up to the highest alphabet index, or some symbols could never be produced;
 `NanoId.calculateMask()` returns the smallest such mask. `step` must be greater than zero. It throws
-`IllegalArgumentException` otherwise. A `size` of zero returns an empty string.
+`IllegalArgumentException` otherwise, as it does for a `size` of zero or less.
 
 ### Example Usage
 
