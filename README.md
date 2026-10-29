@@ -102,9 +102,9 @@ The `NanoId.generateOptimized()` function is an advanced version of the `NanoId.
 lower memory overhead. While it provides a more efficient mechanism to generate unique identifiers, it assumes that you
 know precisely how you want to use it.
 
-🚫 **Warning**: `NanoId.generateOptimized()` checks that `size` is not negative, the alphabet has 1 to 256 symbols and `mask`
-is within 0..255, but not that `mask` and `step` fit the alphabet. Use it only if you're sure about the parameters you're
-passing. A `size` of zero returns an empty string.
+🚫 **Warning**: `NanoId.generateOptimized()` skips the step calculation that `NanoId.generate()` does for you. `mask` must be
+`(2^n) - 1` with `2^n` at least the alphabet size and at most 256 (use `NanoId.calculateMask()`), and `step` must be greater
+than zero; it throws `IllegalArgumentException` otherwise. A `size` of zero returns an empty string.
 
 ### Example Usage
 

@@ -60,7 +60,6 @@ object NanoId {
         additionalBytesFactor: Double = 1.6,
         random: Random = CryptographyRandom.Default,
     ): String {
-        requireValidAlphabet(alphabet)
         require(size > 0) { "size must be greater than zero." }
         require(additionalBytesFactor >= 1) { "additionalBytesFactor must be greater or equal 1." }
 
@@ -77,18 +76,21 @@ object NanoId {
      *
      * @param size The desired length of the generated string.
      * @param alphabet The set of characters to choose from for generating the string.
-     * @param mask The mask used for mapping random bytes to alphabet indices. Should be `(2^n) - 1` where `n` is a power of 2 less than or equal to the alphabet size.
+     * @param mask The mask used for mapping random bytes to alphabet indices. Must be `(2^n) - 1` with `2^n` at least the alphabet size and at most 256, as returned by [calculateMask].
      * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
      * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated optimized string, or an empty string if `size` is zero.
-     * @throws IllegalArgumentException if `size` is negative, the alphabet is empty or larger than 256 characters, or `mask` is outside 0..255.
+     * @throws IllegalArgumentException if `size` is negative, the alphabet is empty or larger than 256 characters, `mask` does not meet the rule above, or `step` is not greater than zero.
      */
     @JvmStatic
     @JvmOverloads
     fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
         require(size >= 0) { "size must not be negative." }
-        requireValidAlphabet(alphabet)
-        require(mask in 0..255) { "mask must be between 0 and 255." }
+        require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
+        require(mask in alphabet.length - 1..255 && (mask and (mask + 1)) == 0) {
+            "mask must be (2^n) - 1, cover every alphabet index and not exceed 255."
+        }
+        require(step > 0) { "step must be greater than zero." }
         if (size == 0) return ""
 
         // Fast path: when every masked byte is guaranteed to be a valid index (mask < alphabet
@@ -101,7 +103,7 @@ object NanoId {
         }
 
         val idBuilder = StringBuilder(size)
-        val bytes = ByteArray(step.coerceAtLeast(1))
+        val bytes = ByteArray(step)
         while (true) {
             random.nextBytes(bytes)
             for (i in bytes.indices) {
@@ -155,7 +157,4 @@ object NanoId {
     @JvmOverloads
     fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
-
-    private fun requireValidAlphabet(alphabet: String) =
-        require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
 }

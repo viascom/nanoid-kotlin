@@ -223,9 +223,29 @@ class NanoIdTest {
     }
 
     @Test
-    fun generateOptimizedWithANonPositiveStepStillReturnsTheRequestedLength() {
-        assertEquals(5, NanoId.generateOptimized(5, "abc", 3, 0).length)
-        assertEquals(5, NanoId.generateOptimized(5, "abc", 3, -1).length)
+    fun generateOptimizedRejectsAMaskThatDoesNotCoverTheAlphabet() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 1, 32) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 15, 32) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 1, 5) }
+    }
+
+    @Test
+    fun generateOptimizedRejectsAMaskThatIsNotAPowerOfTwoMinusOne() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 100, 5) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 64, 32) }
+    }
+
+    @Test
+    fun generateOptimizedAcceptsAMaskLargerThanNeeded() {
+        val id = NanoId.generateOptimized(21, defaultAlphabet, 255, 100)
+        assertEquals(21, id.length)
+        assertTrue(id.all { it in defaultAlphabet })
+    }
+
+    @Test
+    fun generateOptimizedRejectsANonPositiveStep() {
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 3, 0) }
+        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 3, -1) }
     }
 
     companion object {
