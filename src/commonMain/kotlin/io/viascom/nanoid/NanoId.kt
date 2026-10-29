@@ -35,7 +35,7 @@ import kotlin.random.Random
  * val id = NanoId.generate()
  * ```
  */
-object NanoId {
+public object NanoId {
 
     /**
      * Generates a random string based on specified or default parameters.
@@ -45,11 +45,12 @@ object NanoId {
      * @param additionalBytesFactor The additional bytes factor used for calculating the step size. Default is 1.6.
      * @param random The random number generator to use. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated random string.
-     * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters, if the size is not greater than zero, or if `additionalBytesFactor` is below 1 or not finite.
+     * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters, if the size is not greater than zero,
+     * or if `additionalBytesFactor` is below 1 or not finite.
      */
     @JvmStatic
     @JvmOverloads
-    fun generate(
+    public fun generate(
         size: Int = 21,
         alphabet: String = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
         additionalBytesFactor: Double = 1.6,
@@ -71,15 +72,17 @@ object NanoId {
      *
      * @param size The desired length of the generated string.
      * @param alphabet The set of characters to choose from for generating the string.
-     * @param mask The mask used for mapping random bytes to alphabet indices. Must be within 0..255 and contain every bit up to the highest alphabet index, so every symbol can be produced. [calculateMask] returns the smallest such mask.
+     * @param mask The mask used for mapping random bytes to alphabet indices. Must be within 0..255 and contain every bit up to the
+     * highest alphabet index, so every symbol can be produced. [calculateMask] returns the smallest such mask.
      * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
      * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated optimized string, or an empty string if `size` is zero.
-     * @throws IllegalArgumentException if `size` is negative, the alphabet is empty or larger than 256 characters, `mask` does not meet the rule above, or `step` is not greater than zero.
+     * @throws IllegalArgumentException if `size` is negative, the alphabet is empty or larger than 256 characters, `mask` does not
+     * meet the rule above, or `step` is not greater than zero.
      */
     @JvmStatic
     @JvmOverloads
-    fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
+    public fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
         require(size >= 0) { "size must not be negative." }
         val requiredMaskBits = if (alphabet.length == 1) 0 else calculateMask(alphabet)
         require(mask in 0..255 && (mask and requiredMaskBits) == requiredMaskBits) {
@@ -121,7 +124,7 @@ object NanoId {
      * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters.
      */
     @JvmStatic
-    fun calculateAdditionalBytesFactor(alphabet: String): Double {
+    public fun calculateAdditionalBytesFactor(alphabet: String): Double {
         val mask = calculateMask(alphabet)
         return round((1 + abs((mask - alphabet.length.toDouble()) / alphabet.length)) * 100) / 100
     }
@@ -134,7 +137,7 @@ object NanoId {
      * @throws IllegalArgumentException if the alphabet is empty or larger than 256 characters.
      */
     @JvmStatic
-    fun calculateMask(alphabet: String): Int {
+    public fun calculateMask(alphabet: String): Int {
         require(alphabet.length in 1..256) { "alphabet must contain between 1 and 256 symbols." }
         // `or 1` keeps the argument to countLeadingZeroBits non-zero for a single-character
         // alphabet (where alphabet.length - 1 == 0). Without it, countLeadingZeroBits() == 32
@@ -154,6 +157,6 @@ object NanoId {
      */
     @JvmStatic
     @JvmOverloads
-    fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
+    public fun calculateStep(size: Int, alphabet: String, additionalBytesFactor: Double = calculateAdditionalBytesFactor(alphabet)): Int =
         ceil(additionalBytesFactor * calculateMask(alphabet) * size / alphabet.length).toInt()
 }

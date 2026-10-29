@@ -1,0 +1,15 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, mingwX64, tvosArm64, tvosSimulatorArm64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.viascom.nanoid:nanoid>
+final object io.viascom.nanoid/NanoId { // io.viascom.nanoid/NanoId|null[0]
+    final fun calculateAdditionalBytesFactor(kotlin/String): kotlin/Double // io.viascom.nanoid/NanoId.calculateAdditionalBytesFactor|calculateAdditionalBytesFactor(kotlin.String){}[0]
+    final fun calculateMask(kotlin/String): kotlin/Int // io.viascom.nanoid/NanoId.calculateMask|calculateMask(kotlin.String){}[0]
+    final fun calculateStep(kotlin/Int, kotlin/String, kotlin/Double = ...): kotlin/Int // io.viascom.nanoid/NanoId.calculateStep|calculateStep(kotlin.Int;kotlin.String;kotlin.Double){}[0]
+    final fun generate(kotlin/Int = ..., kotlin/String = ..., kotlin/Double = ..., kotlin.random/Random = ...): kotlin/String // io.viascom.nanoid/NanoId.generate|generate(kotlin.Int;kotlin.String;kotlin.Double;kotlin.random.Random){}[0]
+    final fun generateOptimized(kotlin/Int, kotlin/String, kotlin/Int, kotlin/Int, kotlin.random/Random = ...): kotlin/String // io.viascom.nanoid/NanoId.generateOptimized|generateOptimized(kotlin.Int;kotlin.String;kotlin.Int;kotlin.Int;kotlin.random.Random){}[0]
+}
