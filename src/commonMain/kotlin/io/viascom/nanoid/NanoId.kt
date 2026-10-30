@@ -100,28 +100,24 @@ object NanoId {
      * Optionally, you can specify a custom random number generator. This optimized version is designed for
      * higher performance and lower memory overhead.
      *
-     * @param size The desired length of the generated string.
-     * @param alphabet The set of characters to choose from for generating the string.
+     * The arguments are not validated, so the call stays as cheap as possible. Arguments outside the rules below produce a wrong or
+     * biased ID, throw, or never return. [calculateMask] and [calculateStep] return valid values.
+     *
+     * @param size The desired length of the generated string. Must be greater than zero.
+     * @param alphabet The set of characters to choose from for generating the string. Must contain between 1 and 256 symbols.
      * @param mask The mask used for mapping random bytes to alphabet indices. Must be within 0..255 and contain every bit up to the
      * highest alphabet index, so every symbol can be produced. [calculateMask] returns the smallest such mask.
-     * @param step The number of random bytes to generate in each iteration. A larger value may speed up the function but increase memory usage.
+     * @param step The number of random bytes to generate in each iteration. Must be greater than zero. A larger value may speed up the
+     * function but increase memory usage.
      * @param random The random number generator. Default is the platform's secure random via [CryptographyRandom].
      * @return The generated optimized string.
-     * @throws IllegalArgumentException if `size` is not greater than zero, the alphabet is empty, larger than 256 symbols or contains an
-     * unpaired surrogate, `mask` does not meet the rule above, or `step` is not greater than zero.
+     * @throws IllegalArgumentException if the alphabet contains an unpaired surrogate.
      */
     @JvmStatic
     @JvmOverloads
     fun generateOptimized(size: Int, alphabet: String, mask: Int, step: Int, random: Random = CryptographyRandom.Default): String {
-        require(size > 0) { "size must be greater than zero." }
         val symbols = symbolsOf(alphabet)
-        val symbolCount = symbols?.size ?: alphabet.length
-        val requiredMaskBits = if (symbolCount == 1) 0 else maskFor(symbolCount)
-        require(mask in 0..255 && (mask and requiredMaskBits) == requiredMaskBits) {
-            "mask must be within 0..255 and contain the bits of $requiredMaskBits, or some alphabet symbols can never be produced."
-        }
-        require(step > 0) { "step must be greater than zero." }
-        return buildId(size, alphabet, symbols, symbolCount, mask, step, random)
+        return buildId(size, alphabet, symbols, symbols?.size ?: alphabet.length, mask, step, random)
     }
 
     /**
