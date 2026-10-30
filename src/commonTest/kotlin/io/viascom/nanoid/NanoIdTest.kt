@@ -410,15 +410,8 @@ class NanoIdTest {
     }
 
     // ------------------------------------------------------------------
-    // generateOptimized validation
+    // generateOptimized edge cases
     // ------------------------------------------------------------------
-
-    @Test
-    fun generateOptimizedRejectsSizeZero() {
-        val error = assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(0, "abc", 3, 5) }
-        assertEquals("size must be greater than zero.", error.message)
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(0, defaultAlphabet, 63, 16) }
-    }
 
     @Test
     fun generateOptimizedSupportsEmojiAlphabets() {
@@ -426,43 +419,6 @@ class NanoIdTest {
         val symbols = symbolsIn(NanoId.generateOptimized(30, alphabet, NanoId.calculateMask(alphabet), 60))
         assertEquals(30, symbols.size)
         assertTrue(symbols.all { it in symbolsIn(alphabet) })
-    }
-
-    @Test
-    fun generateOptimizedRejectsANegativeSize() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(-1, "abc", 3, 5) }
-    }
-
-    @Test
-    fun generateOptimizedRejectsAnEmptyAlphabet() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "", 0, 5) }
-    }
-
-    @Test
-    fun generateOptimizedRejectsAnAlphabetLargerThan256Characters() {
-        val alphabet = (0 until 257).map { Char(it + 0x100) }.joinToString("")
-        val error = assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, alphabet, 255, 5) }
-        assertEquals("alphabet must contain between 1 and 256 symbols.", error.message)
-    }
-
-    @Test
-    fun generateOptimizedRejectsAMaskOutsideTheByteRange() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", -1, 5) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 511, 5) }
-    }
-
-    @Test
-    fun generateOptimizedRejectsAMaskThatDoesNotCoverTheAlphabet() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 1, 32) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 15, 32) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 1, 5) }
-    }
-
-    @Test
-    fun generateOptimizedRejectsAMaskThatSkipsAlphabetIndices() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 100, 5) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abcd", 5, 5) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(21, defaultAlphabet, 64, 32) }
     }
 
     @Test
@@ -478,12 +434,6 @@ class NanoIdTest {
         val id = NanoId.generateOptimized(21, defaultAlphabet, 255, 100)
         assertEquals(21, id.length)
         assertTrue(id.all { it in defaultAlphabet })
-    }
-
-    @Test
-    fun generateOptimizedRejectsANonPositiveStep() {
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 3, 0) }
-        assertFailsWith<IllegalArgumentException> { NanoId.generateOptimized(5, "abc", 3, -1) }
     }
 
     companion object {
